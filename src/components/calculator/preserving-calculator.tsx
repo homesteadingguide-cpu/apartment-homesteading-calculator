@@ -33,7 +33,6 @@ import {
   ArrowRight,
   Calendar,
   MapPin,
-  Hourglass,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -253,7 +252,6 @@ function HarvestInput({
   );
 }
 
-/* New Shelf Life Tracker Component */
 function ShelfLifeTracker({ methodId }: { methodId: PreservingMethod }) {
   const [processedDate, setProcessedDate] = useState(() => {
     return new Date().toISOString().split('T')[0];
@@ -303,13 +301,12 @@ function ShelfLifeTracker({ methodId }: { methodId: PreservingMethod }) {
     });
   }, [processedDate, storageDetails]);
 
-  const handlePrintLabel = () => {
-    window.print();
-  };
-
   return (
     <Card className="border border-stone-200 bg-stone-50/50 shadow-sm mt-6 overflow-hidden">
       <CardHeader className="bg-white border-b border-stone-100 py-4">
         <CardTitle className="text-base font-semibold text-stone-800 flex items-center gap-2">
           <Package className="w-4 h-4 text-emerald-600" />
           Your Custom Storage Guide
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-5 space-y-4">
