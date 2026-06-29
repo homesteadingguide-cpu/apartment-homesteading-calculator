@@ -303,7 +303,7 @@ function ShelfLifeTracker({ methodId }: { methodId: PreservingMethod }) {
 
   return (
     <Card className="border border-stone-200 bg-stone-50/50 shadow-sm mt-6 overflow-hidden">
-      <CardHeader className="bg-white border-b border-stone-110 py-4">
+      <CardHeader className="bg-white border-b border-stone-100 py-4">
         <CardTitle className="text-base font-semibold text-stone-800 flex items-center gap-2">
           <Package className="w-4 h-4 text-emerald-600" />
           Your Custom Storage Guide
