@@ -247,7 +247,7 @@
 
 @media print {
   .label-print-only {
-    display: block !important;
+    display: grid !important;
   }
 
   body.label-print-mode,
@@ -265,5 +265,15 @@
     left: 0;
     top: 0;
     width: 100%;
+  }
+
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  body.label-print-mode {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }
