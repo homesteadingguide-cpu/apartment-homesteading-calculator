@@ -27,7 +27,6 @@ import {
   Trash2,
   FolderOpen,
   FileText,
-  Link2,
   Printer,
   ShoppingCart,
   ArrowRight,
@@ -64,7 +63,6 @@ import {
 import {
   useRecipeStore,
   downloadRecipeText,
-  copyShareLink,
   type SavedRecipe,
 } from '@/hooks/use-recipe-store';
 
@@ -254,17 +252,15 @@ function RecipeCard({
   recipe,
   isSaved,
   onSave,
-  onExport,
-  onShare,
+   onExport,
   onPrint,
 }: {
   recipe: RecipeOutput;
   isSaved: boolean;
   onSave: () => void;
   onExport: () => void;
-  onShare: () => void;
   onPrint: () => void;
-}) {
+})
   const methodInfo = METHOD_INFO.find((m) => m.id === recipe.method);
   const MethodIcon = { 'quick-pickle': Droplets, ferment: FlaskConical, 'water-bath': ChefHat }[recipe.method];
 
@@ -310,16 +306,7 @@ function RecipeCard({
             </>
           )}
         </Button>
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onShare}
-            className="text-stone-500 hover:text-stone-800 hover:bg-stone-100 text-xs h-8 px-2.5"
-          >
-            <Link2 className="w-3.5 h-3.5 mr-1.5" />
-            <span className="hidden sm:inline">Copy Share Link</span>
-          </Button>
+               <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             size="sm"
@@ -712,13 +699,7 @@ export default function PreservingCalculator({
     setSelectedMethod(null);
   }, []);
 
-  const handleSave = useCallback(() => {
-    if (!recipe || !selectedMethod) return;
-    saveRecipe(selectedMethod, harvestEntries, recipe);
-    setSaveToast('Recipe saved!');
-    setTimeout(() => setSaveToast(null), 2000);
-  }, [recipe, selectedMethod, harvestEntries, saveRecipe]);
-
+ 
   const handleExport = useCallback(() => {
     if (!recipe) return;
     downloadRecipeText(recipe);
@@ -908,7 +889,6 @@ export default function PreservingCalculator({
                     isSaved={isRecipeSaved(recipe)}
                     onSave={handleSave}
                     onExport={handleExport}
-                    onShare={handleShare}
                     onPrint={handlePrint}
                   />
                 </CardContent>
