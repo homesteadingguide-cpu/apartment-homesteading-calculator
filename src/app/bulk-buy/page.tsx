@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
+import AccessGate from '@/components/shared/access-gate';
 import BulkBuyCalculator from '@/components/calculator/bulk-buy-calculator';
 
 export const metadata: Metadata = {
-  title: 'Bulk-Buy Diversion Matrix | Balcony-to-Pantry',
+  title: 'Bulk-Buy Diversion Matrix | Apartment Homesteading Calculators',
   description:
     'Buy 20lbs of produce at a time, process it in 2 hours, and fit 100% of it in your standard fridge, freezer, and one kitchen cabinet.',
 };
 
-// Decode share link payload server-side
 type BulkBuyShareData = {
   item: string | null;
   lbs: number | null;
@@ -38,10 +38,20 @@ export default async function BulkBuyPage({
   const encoded = typeof params.d === 'string' ? params.d : undefined;
   const { item, lbs } = decodeBulkBuyPayload(encoded);
 
+  const spString = new URLSearchParams(
+    Object.fromEntries(
+      Object.entries(params).flatMap(([k, v]) =>
+        Array.isArray(v) ? v.map((val) => [k, val]) : [[k, v]]
+      )
+    )
+  ).toString();
+
   return (
-    <BulkBuyCalculator
-      initialItemId={item}
-      initialWeightLbs={lbs}
-    />
+    <AccessGate calculatorId="bulk-buy" searchParams={spString}>
+      <BulkBuyCalculator
+        initialItemId={item}
+        initialWeightLbs={lbs}
+      />
+    </AccessGate>
   );
 }
