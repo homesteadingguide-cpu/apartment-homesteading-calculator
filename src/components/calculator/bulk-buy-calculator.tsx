@@ -290,15 +290,13 @@ function DiversionPlanCard({
   plan,
   item,
   totalLbs,
-  onExport,
-  onShare,
+   onExport,
   onPrint,
 }: {
   plan: DiversionPlan;
   item: BulkItem;
   totalLbs: number;
   onExport: () => void;
-  onShare: () => void;
   onPrint: () => void;
 }) {
   return (
@@ -325,16 +323,7 @@ function DiversionPlanCard({
       {/* Action buttons — hidden on print */}
       <div className="flex flex-col items-center gap-2 print-hide">
         <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onShare}
-            className="text-stone-500 hover:text-stone-800 hover:bg-stone-100 text-xs h-8 px-2.5"
-          >
-            <Link2 className="w-3.5 h-3.5 mr-1.5" />
-            <span className="hidden sm:inline">Copy Share Link</span>
-          </Button>
-          <Button
+                   <Button
             variant="ghost"
             size="sm"
             onClick={onExport}
@@ -580,22 +569,7 @@ export default function BulkBuyCalculator({
     showToast('Downloaded!');
   }, [plan, selectedItem, parsedWeight, showToast]);
 
-  const handleShare = useCallback(async () => {
-    if (!plan || !selectedItem) return;
-    try {
-      const payload = btoa(JSON.stringify({ item: selectedItem.id, lbs: parsedWeight }));
-      const url = `${window.location.origin}${window.location.pathname}?d=${payload}`;
-      await navigator.clipboard.writeText(url);
-      showToast('Link copied to clipboard!');
-    } catch {
-      const input = document.createElement('input');
-      const payload = btoa(JSON.stringify({ item: selectedItem.id, lbs: parsedWeight }));
-      input.value = `${window.location.origin}${window.location.pathname}?d=${payload}`;
-      document.body.appendChild(input);
-      input.select();
-      document.execCommand('copy');
-      document.body.removeChild(input);
-      showToast('Link copied to clipboard!');
+  
     }
   }, [plan, selectedItem, parsedWeight, showToast]);
 
