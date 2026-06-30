@@ -8,7 +8,6 @@ import {
   MapPin,
   Printer,
   Tag,
-  X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -202,7 +201,7 @@ export default function ShelfLifeTracker({
   );
   const [dateProcessed, setDateProcessed] = useState(todayStr);
   const [itemName, setItemName] = useState(initialItemName || '');
-  const [showPrintLabel, setShowPrintLabel] = useState(false);
+  const [labelCount, setLabelCount] = useState(10);
 
   const shelfInfo = useMemo(
     () => (selectedMethod ? METHOD_SHELF_DATA[selectedMethod] : null),
@@ -225,88 +224,107 @@ export default function ShelfLifeTracker({
   }, [bestByDate]);
 
   const handlePrintLabel = useCallback(() => {
-    setShowPrintLabel(true);
+    document.body.classList.add('label-print-mode');
     setTimeout(() => {
       window.print();
-      setTimeout(() => setShowPrintLabel(false), 500);
-    }, 100);
+      setTimeout(() => document.body.classList.remove('label-print-mode'), 500);
+    }, 150);
   }, []);
 
   const allMethods = Object.keys(METHOD_SHELF_DATA) as TrackerMethod[];
 
-  const printLabel = shelfInfo && bestByDate && (
-    <div className="label-print-only" aria-hidden="true">
-      <div
-        style={{
-          border: '2px dashed #2D5A27',
-          borderRadius: '12px',
-          padding: '24px 32px',
-          maxWidth: '400px',
-          margin: '0 auto',
-          fontFamily: 'Georgia, serif',
-        }}
-      >
-        <div
-          style={{
-            fontSize: '10px',
-            textTransform: 'uppercase',
-            letterSpacing: '0.15em',
-            color: '#6b6559',
-            borderBottom: '1px solid #d6d3c8',
-            paddingBottom: '6px',
-            marginBottom: '12px',
-          }}
-        >
-          YOUR STORAGE REMINDER
+  const labelContent = shelfInfo && bestByDate && (
+    <>
+      <div style={{
+        fontSize: '8px',
+        textTransform: 'uppercase',
+        letterSpacing: '0.18em',
+        color: '#6b6559',
+        borderBottom: '1.5px solid #2D5A27',
+        paddingBottom: '5px',
+        marginBottom: '10px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}>
+        <span>HOMESTEADING GUIDE</span>
+        <span style={{ fontSize: '7px', letterSpacing: '0.1em' }}>STORAGE LABEL</span>
+      </div>
+
+      <div style={{ fontSize: '15px', fontWeight: 700, color: '#222', marginBottom: '10px', lineHeight: 1.2 }}>
+        {itemName || 'Untitled Preserves'}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 16px', fontSize: '11px', color: '#444', marginBottom: '10px' }}>
+        <div>
+          <span style={{ color: '#999', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Method</span>
+          <div style={{ fontWeight: 600 }}>{selectedMethod}</div>
         </div>
-        <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#222', marginBottom: '16px' }}>
-          {itemName || 'Untitled Preserves'}
+        <div>
+          <span style={{ color: '#999', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Storage</span>
+          <div style={{ fontWeight: 600 }}>{shelfInfo.storageLocation}</div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: '#444' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: '#6b6559' }}>Method:</span>
-            <span style={{ fontWeight: 600 }}>{selectedMethod}</span>
+        <div>
+          <span style={{ color: '#999', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Date Made</span>
+          <div style={{ fontWeight: 600 }}>{formatDateShort(new Date(dateProcessed + 'T00:00:00'))}</div>
+        </div>
+        <div>
+          <span style={{ color: '#999', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Shelf Life</span>
+          <div style={{ fontWeight: 600 }}>{shelfInfo.shelfLifeLabel}</div>
+        </div>
+      </div>
+
+      <div style={{
+        background: '#f2f7f0',
+        border: '1.5px solid #2D5A27',
+        borderRadius: '6px',
+        padding: '8px 12px',
+        textAlign: 'center',
+        marginBottom: '10px',
+      }}>
+        <div style={{ fontSize: '7px', textTransform: 'uppercase', letterSpacing: '0.15em', color: '#6b6559', marginBottom: '2px' }}>
+          Best By / Expiry Date
+        </div>
+        <div style={{ fontSize: '16px', fontWeight: 800, color: '#2D5A27', letterSpacing: '0.02em' }}>
+          {formatDate(bestByDate)}
+        </div>
+      </div>
+
+      <div style={{ fontSize: '7px', color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Notes</div>
+      <div style={{ borderBottom: '1px solid #d6d3c8', height: '14px', marginBottom: '4px' }}></div>
+      <div style={{ borderBottom: '1px solid #d6d3c8', height: '14px', marginBottom: '4px' }}></div>
+    </>
+  );
+
+  const printPage = labelContent && (
+    <div className="label-print-only" aria-hidden="true" style={{ padding: '12px' }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '14px 18px',
+      }}>
+        {Array.from({ length: labelCount }).map((_, i) => (
+          <div
+            key={i}
+            style={{
+              border: '2px dashed #2D5A27',
+              borderRadius: '10px',
+              padding: '16px 20px',
+              fontFamily: "'Georgia', 'Times New Roman', serif",
+              pageBreakInside: 'avoid',
+              breakInside: 'avoid',
+            }}
+          >
+            {labelContent}
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: '#6b6559' }}>Date Packaged:</span>
-            <span style={{ fontWeight: 600 }}>{formatDateShort(new Date(dateProcessed + 'T00:00:00'))}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: '#6b6559' }}>Best By:</span>
-            <span style={{ fontWeight: 700, color: '#2D5A27' }}>{formatDate(bestByDate)}</span>
-          </div>
-        </div>
-        <div
-          style={{
-            marginTop: '16px',
-            paddingTop: '12px',
-            borderTop: '1px dashed #d6d3c8',
-            display: 'flex',
-            justifyContent: 'space-between',
-            fontSize: '12px',
-            color: '#6b6559',
-          }}
-        >
-          <span>Storage: {shelfInfo.storageLocation}</span>
-          <span>{shelfInfo.shelfLifeLabel}</span>
-        </div>
-        <div
-          style={{
-            marginTop: '12px',
-            fontSize: '9px',
-            color: '#a8a29e',
-            textAlign: 'center',
-          }}
-        >
-          Apartment Homesteading Calculators | homesteadingguide.com
-        </div>
+        ))}
       </div>
     </div>
   );
 
   return (
     <>
-      {showPrintLabel && printLabel}
+      {printPage}
 
       <Card
         className={`border-[#d6d3c8] shadow-sm overflow-hidden ${compact ? '' : 'bg-white'}`}
@@ -323,7 +341,6 @@ export default function ShelfLifeTracker({
         )}
         <CardContent className={compact ? 'p-4' : 'pt-0 pb-5 px-5'}>
           <div className="space-y-4">
-            {/* Method selector */}
             <div className="space-y-1.5">
               <Label className="text-xs text-[#6b6559]">Preserving Method</Label>
               <select
@@ -340,7 +357,6 @@ export default function ShelfLifeTracker({
               </select>
             </div>
 
-            {/* Item name */}
             <div className="space-y-1.5">
               <Label className="text-xs text-[#6b6559]">
                 Label Name <span className="opacity-50">(optional)</span>
@@ -354,7 +370,6 @@ export default function ShelfLifeTracker({
               />
             </div>
 
-            {/* Date processed */}
             <div className="space-y-1.5">
               <Label className="text-xs text-[#6b6559]">Date Processed</Label>
               <input
@@ -365,7 +380,6 @@ export default function ShelfLifeTracker({
               />
             </div>
 
-            {/* Storage info */}
             {shelfInfo && bestByDate && (
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
@@ -430,14 +444,35 @@ export default function ShelfLifeTracker({
                   </div>
                 </div>
 
-                <Button
-                  onClick={handlePrintLabel}
-                  variant="outline"
-                  className="w-full border-[#2D5A27] text-[#2D5A27] hover:bg-[#e8f0e6] text-xs h-9 print-hide"
-                >
-                  <Printer className="w-3.5 h-3.5 mr-1.5" />
-                  Print Reminder Label
-                </Button>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs text-[#6b6559]">Labels per page</Label>
+                    <div className="flex items-center gap-1">
+                      {[6, 10, 14, 20].map((n) => (
+                        <button
+                          key={n}
+                          type="button"
+                          onClick={() => setLabelCount(n)}
+                          className={`w-8 h-7 rounded text-xs font-medium transition-colors ${
+                            labelCount === n
+                              ? 'bg-[#2D5A27] text-white'
+                              : 'bg-[#F4F1EA] text-[#6b6559] hover:bg-[#e8e4da]'
+                          }`}
+                        >
+                          {n}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <Button
+                    onClick={handlePrintLabel}
+                    variant="outline"
+                    className="w-full border-[#2D5A27] text-[#2D5A27] hover:bg-[#e8f0e6] text-xs h-9 print-hide"
+                  >
+                    <Printer className="w-3.5 h-3.5 mr-1.5" />
+                    Print {labelCount} Storage Labels
+                  </Button>
+                </div>
               </motion.div>
             )}
           </div>
