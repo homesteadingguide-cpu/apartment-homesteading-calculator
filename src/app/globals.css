@@ -37,6 +37,14 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-sage: #2D5A27;
+  --color-sage-light: #e8f0e6;
+  --color-sage-50: #f2f7f0;
+  --color-sage-100: #e8f0e6;
+  --color-sage-600: #2D5A27;
+  --color-sage-700: #1e3d1a;
+  --color-oatmeal: #F4F1EA;
+  --color-charcoal: #222222;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -45,71 +53,37 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --background: #F4F1EA;
+  --foreground: #222222;
+  --card: #FFFFFF;
+  --card-foreground: #222222;
+  --popover: #FFFFFF;
+  --popover-foreground: #222222;
+  --primary: #2D5A27;
+  --primary-foreground: #FFFFFF;
+  --secondary: #e8f0e6;
+  --secondary-foreground: #1e3d1a;
+  --muted: #F4F1EA;
+  --muted-foreground: #6b6559;
+  --accent: #e8f0e6;
+  --accent-foreground: #1e3d1a;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: #d6d3c8;
+  --input: #d6d3c8;
+  --ring: #2D5A27;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar: #f2f7f0;
+  --sidebar-foreground: #222222;
+  --sidebar-primary: #2D5A27;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #e8f0e6;
+  --sidebar-accent-foreground: #1e3d1a;
+  --sidebar-border: #d6d3c8;
+  --sidebar-ring: #2D5A27;
 }
 
 @layer base {
@@ -123,13 +97,11 @@
 
 /* ---- Print Styles ---- */
 
-/* Hide print-only notes on screen */
 .print-only-notes {
   display: none;
 }
 
 @media print {
-  /* Show the notes section only in print */
   .print-only-notes {
     display: block !important;
     margin-top: 24pt;
@@ -165,7 +137,6 @@
     height: 22pt;
   }
 
-  /* Hide site header, nav, footer, and all interactive elements */
   header,
   footer,
   .print-hide,
@@ -175,26 +146,22 @@
     display: none !important;
   }
 
-  /* Remove gradient background */
   body {
     background: white !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
-  /* Show only the recipe section */
   main {
     padding: 0 !important;
     margin: 0 !important;
     max-width: 100% !important;
   }
 
-  /* Hide everything outside the recipe card */
   .min-h-screen > *:not(main) {
     display: none !important;
   }
 
-  /* Make the recipe card full width, no shadows */
   [data-print-recipe] {
     border: none !important;
     box-shadow: none !important;
@@ -202,15 +169,13 @@
     margin: 0 !important;
   }
 
-  /* Clean up the recipe for print */
   [data-print-recipe] h2 {
     font-size: 18pt !important;
     margin-bottom: 4pt !important;
   }
 
-  /* Print header: brand + title — context-aware per page */
   [data-page="preserving"] [data-print-recipe]::before {
-    content: "Balcony-to-Pantry  |  Preserving Calculator";
+    content: "Apartment Homesteading Calculators  |  Preserving Calculator";
     display: block;
     font-size: 8pt;
     text-transform: uppercase;
@@ -222,7 +187,7 @@
   }
 
   [data-page="bulk-buy"] [data-print-recipe]::before {
-    content: "Balcony-to-Pantry  |  Bulk-Buy Diversion Matrix";
+    content: "Apartment Homesteading Calculators  |  Bulk-Buy Diversion Matrix";
     display: block;
     font-size: 8pt;
     text-transform: uppercase;
@@ -233,7 +198,6 @@
     border-bottom: 0.5pt solid #e7e5e4;
   }
 
-  /* Ensure tabs content is all visible (not hidden by radix) */
   [data-radix-tabs-content] {
     display: block !important;
   }
@@ -242,24 +206,20 @@
     display: block !important;
   }
 
-  /* Hide tab triggers */
   [data-radix-tabs-list] {
     display: none !important;
   }
 
-  /* Clean card styling for print */
   [data-print-recipe] > div > div > div {
     break-inside: avoid;
   }
 
-  /* Hide the step-3 heading + badge above the card */
   main > div:has([data-print-recipe]) > div:first-child {
     display: none !important;
   }
 
-  /* Add a subtle print footer — context-aware per page */
   [data-page="preserving"] [data-print-recipe]::after {
-    content: "Generated by Balcony-to-Pantry Preserving Calculator  |  Recipes use scientifically-tested preserving ratios. Always follow food safety guidelines.";
+    content: "Generated by Apartment Homesteading Calculators  |  Recipes use scientifically-tested preserving ratios. Always follow food safety guidelines.";
     display: block;
     font-size: 7pt;
     color: #a8a29e;
@@ -269,12 +229,41 @@
   }
 
   [data-page="bulk-buy"] [data-print-recipe]::after {
-    content: "Generated by Balcony-to-Pantry Bulk-Buy Diversion Matrix  |  Process within 24-48 hours of purchase. Always follow food safety guidelines.";
+    content: "Generated by Apartment Homesteading Calculators  |  Process within 24-48 hours of purchase. Always follow food safety guidelines.";
     display: block;
     font-size: 7pt;
     color: #a8a29e;
     margin-top: 16pt;
     padding-top: 6pt;
     border-top: 0.5pt solid #e7e5e4;
+  }
+}
+
+/* ---- Shelf-Life Label Print ---- */
+
+.label-print-only {
+  display: none;
+}
+
+@media print {
+  .label-print-only {
+    display: block !important;
+  }
+
+  body.label-print-mode,
+  body.label-print-mode * {
+    visibility: hidden;
+  }
+
+  body.label-print-mode .label-print-only,
+  body.label-print-mode .label-print-only * {
+    visibility: visible;
+  }
+
+  body.label-print-mode .label-print-only {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
   }
 }
