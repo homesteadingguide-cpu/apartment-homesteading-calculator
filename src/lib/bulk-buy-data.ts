@@ -1282,7 +1282,7 @@ export function generateDiversionPlan(
 
   return {
     steps,
-    totalWeightLbs,
+    totalWeightLbs: totalLbs,
     totalWeightGrams: Math.round(totalLbs * 453.592),
   };
 }
