@@ -6,25 +6,25 @@ import { Leaf, ShoppingCart } from 'lucide-react';
 
 const NAV_ITEMS = [
   { href: '/preserving', label: 'Preserving Calculator', shortLabel: 'Preserving', icon: Leaf },
-  { href: '/bulk-buy', label: 'Bulk-Buy Diversion Matrix', shortLabel: 'Bulk Buy', icon: ShoppingCart },
+  { href: '/bulk-buy', label: 'Bulk-Buy Matrix', shortLabel: 'Bulk Buy', icon: ShoppingCart },
 ] as const;
 
 export default function SiteHeader() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-stone-200/60">
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#d6d3c8]">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between">
         {/* Brand */}
         <Link href="/preserving" className="flex items-center gap-2.5 no-underline">
-          <div className="bg-emerald-100 p-2 rounded-xl">
-            <Leaf className="w-5 h-5 text-emerald-600" />
+          <div className="bg-[#e8f0e6] p-2 rounded-xl">
+            <Leaf className="w-5 h-5 text-[#2D5A27]" />
           </div>
           <div>
-            <h1 className="font-bold text-stone-900 text-sm sm:text-base leading-tight">
-              Balcony-to-Pantry
+            <h1 className="font-bold text-[#222] text-sm sm:text-base leading-tight">
+              Homesteading Guide
             </h1>
-            <p className="text-[10px] sm:text-xs text-stone-400">Apartment Homesteading Tools</p>
+            <p className="text-[10px] sm:text-xs text-[#6b6559]">Apartment Homesteading Calculators</p>
           </div>
         </Link>
 
@@ -38,8 +38,8 @@ export default function SiteHeader() {
                 href={item.href}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors no-underline ${
                   isActive
-                    ? 'bg-emerald-100 text-emerald-700'
-                    : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
+                    ? 'bg-[#e8f0e6] text-[#2D5A27]'
+                    : 'text-[#6b6559] hover:text-[#222] hover:bg-[#F4F1EA]'
                 }`}
               >
                 <item.icon className="w-3.5 h-3.5" />
