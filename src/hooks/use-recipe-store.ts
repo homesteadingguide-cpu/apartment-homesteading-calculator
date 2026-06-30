@@ -62,7 +62,7 @@ export interface SavedRecipe {
   recipe: RecipeOutput;
 }
 
-const STORAGE_KEY = 'balcony-to-pantry-saved-recipes';
+const STORAGE_KEY = 'apt-homesteading-saved-recipes';
 
 // ---- Helpers ----
 
