@@ -276,4 +276,11 @@
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+
+  /* Keep print-hide elements in the layout during label printing
+     so label-print-only content can still render */
+  body.label-print-mode .print-hide {
+    display: block !important;
+    visibility: hidden !important;
+  }
 }
