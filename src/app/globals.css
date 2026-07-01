@@ -187,7 +187,7 @@
   }
 
   [data-page="bulk-buy"] [data-print-recipe]::before {
-    content: "Apartment Homesteading Calculators  |  Bulk-Buy Diversion Matrix";
+    content: "Apartment Homesteading Calculators  |  Bulk-Buy Pantry Calculator";
     display: block;
     font-size: 8pt;
     text-transform: uppercase;

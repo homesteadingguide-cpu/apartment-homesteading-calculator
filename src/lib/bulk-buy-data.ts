@@ -1,5 +1,5 @@
 // ============================================================
-// Apartment Homesteading Calculators — Bulk-Buy Diversion Matrix — Data & Logic Engine
+// Apartment Homesteading Calculators — Bulk-Buy Pantry Calculator — Data & Logic Engine
 // ============================================================
 
 // --- Types ---

@@ -933,7 +933,7 @@ export default function PreservingCalculator({
                   20 lbs of carrots? 50 lbs of potatoes? Learn exactly how to process and store it all in your apartment.
                 </p>
                 <span className="inline-flex items-center gap-1 text-xs font-medium text-[#2D5A27] mt-2">
-                  Try the Bulk-Buy Diversion Matrix
+                  Try the Bulk-Buy Pantry Calculator
                   <ArrowRight className="w-3 h-3" />
                 </span>
               </div>

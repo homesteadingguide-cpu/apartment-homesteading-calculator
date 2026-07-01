@@ -3,7 +3,7 @@ import AccessGate from '@/components/shared/access-gate';
 import BulkBuyCalculator from '@/components/calculator/bulk-buy-calculator';
 
 export const metadata: Metadata = {
-  title: 'Bulk-Buy Diversion Matrix | Apartment Homesteading Calculators',
+  title: 'Bulk-Buy Pantry Calculator | Apartment Homesteading Calculators',
   description:
     'Buy 20lbs of produce at a time, process it in 2 hours, and fit 100% of it in your standard fridge, freezer, and one kitchen cabinet.',
 };

@@ -26,7 +26,7 @@ export interface AccessConfig {
     purchaseUrl: string;
   };
   'bulk-buy': {
-    label: 'Bulk-Buy Diversion Matrix';
+    label: 'Bulk-Buy Pantry Calculator';
     description: 'Buy in bulk, process in 2 hours, fit 100% of it in your apartment.';
     codes: string[];
     purchaseUrl: string;
@@ -51,7 +51,7 @@ export const ACCESS_CONFIG: AccessConfig = {
     purchaseUrl: 'https://homesteadingguide.com/preserving-calculator',
   },
   'bulk-buy': {
-    label: 'Bulk-Buy Diversion Matrix',
+    label: 'Bulk-Buy Pantry Calculator',
     description: 'Buy in bulk, process in 2 hours, fit 100% of it in your apartment.',
     codes: [
       'GREENTHUMB', // Demo code — replace with real buyer codes

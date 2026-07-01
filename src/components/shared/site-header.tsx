@@ -6,7 +6,7 @@ import { Leaf, ShoppingCart } from 'lucide-react';
 
 const NAV_ITEMS = [
   { href: '/preserving', label: 'Preserving Calculator', shortLabel: 'Preserving', icon: Leaf },
-  { href: '/bulk-buy', label: 'Bulk-Buy Matrix', shortLabel: 'Bulk Buy', icon: ShoppingCart },
+  { href: '/bulk-buy', label: 'Bulk-Buy Pantry', shortLabel: 'Bulk Buy', icon: ShoppingCart },
 ] as const;
 
 export default function SiteHeader() {
