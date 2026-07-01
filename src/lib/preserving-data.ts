@@ -604,7 +604,7 @@ function generateWaterBathRecipe(entries: HarvestEntry[]): RecipeOutput {
   }
 
   return {
-    title: `Water-Bath Canned ${produceNames}`,
+    title: isFruit ? `Water-Bath Canned ${produceNames}` : `Pickled ${produceNames} (Water-Bath Canned)`,
     method: "water-bath",
     jarSize,
     jarSizeMl: jarMl,

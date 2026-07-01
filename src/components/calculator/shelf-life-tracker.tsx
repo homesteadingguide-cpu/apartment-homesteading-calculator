@@ -27,7 +27,7 @@ export type TrackerMethod =
   | 'Make Sauce'
   | 'Caramelize & Freeze'
   | 'Make Jam'
-  | 'Make Butter'
+  | 'Make Fruit Butter'
   | 'Make Powder'
   | 'Make Chips'
   | 'Make Pesto'
@@ -105,7 +105,7 @@ const METHOD_SHELF_DATA: Record<TrackerMethod, ShelfLifeInfo> = {
     shelfLifeLabel: '12 Months (Shelf-Stable)',
     isShelfStable: true,
   },
-  'Make Butter': {
+  'Make Fruit Butter': {
     storageLocation: 'Fridge',
     shelfLifeMonths: 3,
     shelfLifeLabel: '3 Months (Refrigerated)',

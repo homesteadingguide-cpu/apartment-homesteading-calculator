@@ -60,7 +60,7 @@ const METHOD_NAME_MAP: Record<string, string> = {
   'Make Sauce': 'Make Sauce',
   'Make Powder': 'Make Powder',
   'Blanch & Freeze': 'Blanch & Freeze',
-  'Make Fruit Butter': 'Make Butter',
+  'Make Fruit Butter': 'Make Fruit Butter',
   'Make Jam': 'Make Jam',
   'Make Chips': 'Make Chips',
   'Caramelize & Freeze': 'Caramelize & Freeze',
