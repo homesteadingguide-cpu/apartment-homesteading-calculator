@@ -56,7 +56,7 @@ export const ACCESS_CONFIG: AccessConfig = {
     codes: [
       'GREENTHUMB', // Demo code — replace with real buyer codes
     ],
-    purchaseUrl: 'https://payhip.com/b/WGndS',
+    purchaseUrl: 'https://payhip.com/b/8wKgb',
   },
 };
 
