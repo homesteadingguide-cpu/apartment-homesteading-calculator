@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import AccessGate from '@/components/shared/access-gate';
 import PreservingCalculator from '@/components/calculator/preserving-calculator';
 
 export const metadata: Metadata = {
@@ -42,10 +43,20 @@ export default async function PreservingPage({
   const encoded = typeof params.r === 'string' ? params.r : undefined;
   const { method, entries } = decodePayload(encoded);
 
+  const spString = new URLSearchParams(
+    Object.fromEntries(
+      Object.entries(params).flatMap(([k, v]) =>
+        Array.isArray(v) ? v.map((val) => [k, val]) : [[k, v]]
+      )
+    )
+  ).toString();
+
   return (
-    <PreservingCalculator
-      initialMethod={method as 'quick-pickle' | 'ferment' | 'water-bath' | null}
-      initialEntries={entries}
-    />
+    <AccessGate calculatorId="preserving" searchParams={spString}>
+      <PreservingCalculator
+        initialMethod={method as 'quick-pickle' | 'ferment' | 'water-bath' | null}
+        initialEntries={entries}
+      />
+    </AccessGate>
   );
 }
