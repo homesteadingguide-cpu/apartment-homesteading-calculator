@@ -63,8 +63,10 @@ import {
 import {
   useRecipeStore,
   downloadRecipeText,
+
   type SavedRecipe,
 } from '@/hooks/use-recipe-store';
+import ShelfLifeTracker from '@/components/calculator/shelf-life-tracker';
 
 // ---- Sub-components ----
 
@@ -79,7 +81,7 @@ function MethodCard({
 }) {
   const icons = { 'quick-pickle': Droplets, ferment: FlaskConical, 'water-bath': ChefHat };
   const Icon = icons[method.id];
-  const diffColor = { Easy: 'bg-emerald-100 text-emerald-800', Medium: 'bg-amber-100 text-amber-800', Advanced: 'bg-rose-100 text-rose-800' }[method.difficulty];
+  const diffColor = { Easy: 'bg-[#e8f0e6] text-[#1e3d1a]', Medium: 'bg-[#e8f0e6] text-amber-800', Advanced: 'bg-rose-100 text-rose-800' }[method.difficulty];
 
   return (
     <motion.button
@@ -88,15 +90,15 @@ function MethodCard({
       onClick={onClick}
       className={`relative w-full text-left rounded-2xl border-2 p-5 transition-all duration-200 cursor-pointer ${
         selected
-          ? 'border-emerald-500 bg-emerald-50/80 shadow-md shadow-emerald-100'
-          : 'border-stone-200 bg-white hover:border-stone-300 hover:shadow-sm'
+          ? 'border-[#2D5A27] bg-[#f2f7f0]/80 shadow-md shadow-[#e8f0e6]'
+          : 'border-[#d6d3c8] bg-white hover:border-[#b5b0a3] hover:shadow-sm'
       }`}
     >
       {selected && (
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="absolute -top-2 -right-2 bg-emerald-500 text-white rounded-full p-1"
+          className="absolute -top-2 -right-2 bg-[#f2f7f0]0 text-white rounded-full p-1"
         >
           <CheckCircle2 className="w-4 h-4" />
         </motion.div>
@@ -104,20 +106,20 @@ function MethodCard({
       <div className="flex items-start gap-3">
         <div
           className={`rounded-xl p-2.5 ${
-            selected ? 'bg-emerald-500 text-white' : 'bg-stone-100 text-stone-500'
+            selected ? 'bg-[#f2f7f0]0 text-white' : 'bg-[#F4F1EA] text-[#6b6559]'
           }`}
         >
           <Icon className="w-5 h-5" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-stone-900 text-sm sm:text-base">{method.name}</h3>
+            <h3 className="font-semibold text-[#222] text-sm sm:text-base">{method.name}</h3>
             <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${diffColor}`}>
               {method.difficulty}
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-stone-500 leading-relaxed">{method.tagline}</p>
-          <p className="text-xs text-stone-400 mt-2 flex items-center gap-1.5">
+          <p className="text-xs sm:text-sm text-[#6b6559] leading-relaxed">{method.tagline}</p>
+          <p className="text-xs text-[#a8a29e] mt-2 flex items-center gap-1.5">
             <Clock className="w-3 h-3" />
             {method.timeRange}
           </p>
@@ -170,7 +172,7 @@ function HarvestInput({
         <Button
           onClick={handleAdd}
           disabled={!selectedProduce}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white shrink-0"
+          className="bg-[#2D5A27] hover:bg-emerald-700 text-white shrink-0"
         >
           <Plus className="w-4 h-4 mr-1" />
           Add
@@ -182,7 +184,7 @@ function HarvestInput({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-8 text-stone-400"
+            className="text-center py-8 text-[#a8a29e]"
           >
             <Leaf className="w-10 h-10 mx-auto mb-2 opacity-40" />
             <p className="text-sm">Add your harvest to get started</p>
@@ -201,14 +203,14 @@ function HarvestInput({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20, height: 0 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  className="flex items-center gap-3 bg-white rounded-xl border border-stone-200 p-3"
+                  className="flex items-center gap-3 bg-white rounded-xl border border-[#d6d3c8] p-3"
                 >
                   <span className="text-2xl">{produce.emoji}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-stone-800 truncate">{produce.name}</p>
+                    <p className="text-sm font-medium text-[#222] truncate">{produce.name}</p>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Label className="text-xs text-stone-500 hidden sm:inline">g</Label>
+                    <Label className="text-xs text-[#6b6559] hidden sm:inline">g</Label>
                     <Input
                       type="number"
                       min={10}
@@ -218,13 +220,13 @@ function HarvestInput({
                       placeholder="150"
                       className="w-20 h-9 text-center text-sm"
                     />
-                    <Label className="text-xs text-stone-500 sm:hidden">g</Label>
+                    <Label className="text-xs text-[#6b6559] sm:hidden">g</Label>
                   </div>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => onRemove(i)}
-                    className="h-8 w-8 text-stone-400 hover:text-red-500 hover:bg-red-50 shrink-0"
+                    className="h-8 w-8 text-[#a8a29e] hover:text-red-500 hover:bg-red-50 shrink-0"
                   >
                     <Minus className="w-4 h-4" />
                   </Button>
@@ -236,8 +238,8 @@ function HarvestInput({
       </AnimatePresence>
 
       {entries.length > 0 && (
-        <div className="flex items-center gap-2 text-xs text-stone-500 bg-amber-50 rounded-lg px-3 py-2">
-          <Scale className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+        <div className="flex items-center gap-2 text-xs text-[#6b6559] bg-amber-50 rounded-lg px-3 py-2">
+          <Scale className="w-3.5 h-3.5 text-[#2D5A27] shrink-0" />
           <span>
             For the best results, use a kitchen scale. The preserving ratios are calculated to the gram
             — accuracy matters for food safety, especially with fermentation.
@@ -252,7 +254,7 @@ function RecipeCard({
   recipe,
   isSaved,
   onSave,
-   onExport,
+  onExport,
   onPrint,
 }: {
   recipe: RecipeOutput;
@@ -260,7 +262,7 @@ function RecipeCard({
   onSave: () => void;
   onExport: () => void;
   onPrint: () => void;
-})
+}) {
   const methodInfo = METHOD_INFO.find((m) => m.id === recipe.method);
   const MethodIcon = { 'quick-pickle': Droplets, ferment: FlaskConical, 'water-bath': ChefHat }[recipe.method];
 
@@ -273,12 +275,12 @@ function RecipeCard({
     >
       {/* Recipe Header */}
       <div className="text-center space-y-2 py-2">
-        <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 text-xs font-medium px-3 py-1 rounded-full">
+        <div className="inline-flex items-center gap-2 bg-[#e8f0e6] text-[#2D5A27] text-xs font-medium px-3 py-1 rounded-full">
           <MethodIcon className="w-3.5 h-3.5" />
           {methodInfo?.name}
         </div>
-        <h2 className="text-xl sm:text-2xl font-bold text-stone-900">{recipe.title}</h2>
-        <p className="text-sm text-stone-500">
+        <h2 className="text-xl sm:text-2xl font-bold text-[#222]">{recipe.title}</h2>
+        <p className="text-sm text-[#6b6559]">
           {recipe.jarSize === 'half-pint' ? 'Half-Pint' : 'Pint'} Jar ({recipe.jarSizeMl} ml) — Serves {recipe.servings}
         </p>
       </div>
@@ -290,8 +292,8 @@ function RecipeCard({
           onClick={onSave}
           className={
             isSaved
-              ? 'border-emerald-300 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 w-full sm:w-auto'
-              : 'bg-emerald-600 hover:bg-emerald-700 text-white w-full sm:w-auto'
+              ? 'border-[#2D5A27]/40 text-[#2D5A27] bg-[#f2f7f0] hover:bg-[#e8f0e6] w-full sm:w-auto'
+              : 'bg-[#2D5A27] hover:bg-emerald-700 text-white w-full sm:w-auto'
           }
         >
           {isSaved ? (
@@ -306,12 +308,12 @@ function RecipeCard({
             </>
           )}
         </Button>
-               <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             size="sm"
             onClick={onExport}
-            className="text-stone-500 hover:text-stone-800 hover:bg-stone-100 text-xs h-8 px-2.5"
+            className="text-[#6b6559] hover:text-[#222] hover:bg-[#F4F1EA] text-xs h-8 px-2.5"
           >
             <Download className="w-3.5 h-3.5 mr-1.5" />
             <span className="hidden sm:inline">Download</span>
@@ -320,7 +322,7 @@ function RecipeCard({
             variant="ghost"
             size="sm"
             onClick={onPrint}
-            className="text-stone-500 hover:text-stone-800 hover:bg-stone-100 text-xs h-8 px-2.5 print-hide"
+            className="text-[#6b6559] hover:text-[#222] hover:bg-[#F4F1EA] text-xs h-8 px-2.5 print-hide"
           >
             <Printer className="w-3.5 h-3.5 mr-1.5" />
             <span className="hidden sm:inline">Print</span>
@@ -328,7 +330,7 @@ function RecipeCard({
         </div>
       </div>
 
-      {/* Stats — decorative on screen, hidden on print since info is in the header */}
+      {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 print-hide">
         <MiniStat icon={Scale} label="Harvest" value={recipe.ingredients[0]?.amount ?? '-'} />
         <MiniStat icon={Package} label="Jar Size" value={recipe.jarSize === 'half-pint' ? 'Half-Pint' : 'Pint'} />
@@ -337,7 +339,7 @@ function RecipeCard({
       </div>
 
       <Tabs defaultValue="recipe" className="w-full">
-        <TabsList className="w-full grid grid-cols-3 bg-stone-100">
+        <TabsList className="w-full grid grid-cols-3 bg-[#F4F1EA]">
           <TabsTrigger value="recipe" className="text-xs sm:text-sm">
             <ChefHat className="w-3.5 h-3.5 mr-1 hidden sm:inline" />
             Recipe
@@ -352,12 +354,11 @@ function RecipeCard({
           </TabsTrigger>
         </TabsList>
 
-        {/* Ingredients Tab */}
         <TabsContent value="recipe">
-          <Card className="border-stone-200 shadow-sm mt-3">
+          <Card className="border-[#d6d3c8] shadow-sm mt-3">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-500" />
+                <Sparkles className="w-4 h-4 text-[#2D5A27]" />
                 Ingredients — Scaled for {recipe.jarSize === 'half-pint' ? 'Half-Pint' : 'Pint'} Jar
               </CardTitle>
             </CardHeader>
@@ -366,15 +367,15 @@ function RecipeCard({
                 {recipe.ingredients.map((ing, i) => (
                   <div
                     key={i}
-                    className="flex items-baseline gap-3 pb-3 border-b border-stone-100 last:border-0 last:pb-0"
+                    className="flex items-baseline gap-3 pb-3 border-b border-[#d6d3c8]/60 last:border-0 last:pb-0"
                   >
-                    <span className="font-semibold text-emerald-700 text-sm min-w-[70px] shrink-0">
+                    <span className="font-semibold text-[#2D5A27] text-sm min-w-[70px] shrink-0">
                       {ing.amount}
                     </span>
                     <div className="flex-1">
-                      <p className="text-sm text-stone-800">{ing.name}</p>
+                      <p className="text-sm text-[#222]">{ing.name}</p>
                       {ing.note && (
-                        <p className="text-xs text-stone-400 mt-0.5">{ing.note}</p>
+                        <p className="text-xs text-[#a8a29e] mt-0.5">{ing.note}</p>
                       )}
                     </div>
                   </div>
@@ -383,18 +384,17 @@ function RecipeCard({
             </CardContent>
           </Card>
 
-          {/* Equipment */}
-          <Card className="border-stone-200 shadow-sm mt-4">
+          <Card className="border-[#d6d3c8] shadow-sm mt-4">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
-                <Package className="w-4 h-4 text-stone-500" />
+                <Package className="w-4 h-4 text-[#6b6559]" />
                 Equipment Needed
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {recipe.equipment.map((eq, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-stone-700">
+                  <li key={i} className="flex items-start gap-2 text-sm text-[#444]">
                     <span className="text-emerald-500 mt-0.5">•</span>
                     {eq}
                   </li>
@@ -404,9 +404,8 @@ function RecipeCard({
           </Card>
         </TabsContent>
 
-        {/* Steps Tab */}
         <TabsContent value="steps">
-          <Card className="border-stone-200 shadow-sm mt-3">
+          <Card className="border-[#d6d3c8] shadow-sm mt-3">
             <CardHeader className="pb-3">
               <CardTitle className="text-base">Step-by-Step Instructions</CardTitle>
             </CardHeader>
@@ -420,10 +419,10 @@ function RecipeCard({
                     transition={{ delay: i * 0.08 }}
                     className="flex gap-3"
                   >
-                    <span className="flex-shrink-0 w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">
+                    <span className="flex-shrink-0 w-7 h-7 rounded-full bg-[#e8f0e6] text-[#2D5A27] flex items-center justify-center text-xs font-bold">
                       {i + 1}
                     </span>
-                    <p className="text-sm text-stone-700 leading-relaxed pt-0.5">{step}</p>
+                    <p className="text-sm text-[#444] leading-relaxed pt-0.5">{step}</p>
                   </motion.li>
                 ))}
               </ol>
@@ -431,10 +430,9 @@ function RecipeCard({
           </Card>
         </TabsContent>
 
-        {/* Storage & Safety Tab */}
         <TabsContent value="storage">
           <div className="space-y-4 mt-3">
-            <Card className="border-stone-200 shadow-sm">
+            <Card className="border-[#d6d3c8] shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
                   <Package className="w-4 h-4 text-blue-500" />
@@ -442,19 +440,19 @@ function RecipeCard({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-stone-700 leading-relaxed">{recipe.storage}</p>
+                <p className="text-sm text-[#444] leading-relaxed">{recipe.storage}</p>
               </CardContent>
             </Card>
 
-            <Card className="border-stone-200 shadow-sm">
+            <Card className="border-[#d6d3c8] shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Timer className="w-4 h-4 text-amber-500" />
+                  <Timer className="w-4 h-4 text-[#2D5A27]" />
                   Shelf Life
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-stone-700 leading-relaxed">{recipe.shelfLife}</p>
+                <p className="text-sm text-[#444] leading-relaxed">{recipe.shelfLife}</p>
               </CardContent>
             </Card>
 
@@ -500,10 +498,10 @@ function MiniStat({
   value: string;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-stone-200 p-3 text-center">
-      <Icon className="w-4 h-4 mx-auto text-stone-400 mb-1" />
-      <p className="text-xs text-stone-500">{label}</p>
-      <p className="text-sm font-semibold text-stone-800 mt-0.5">{value}</p>
+    <div className="bg-white rounded-xl border border-[#d6d3c8] p-3 text-center">
+      <Icon className="w-4 h-4 mx-auto text-[#a8a29e] mb-1" />
+      <p className="text-xs text-[#6b6559]">{label}</p>
+      <p className="text-sm font-semibold text-[#222] mt-0.5">{value}</p>
     </div>
   );
 }
@@ -531,10 +529,10 @@ function SavedRecipesDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-md bg-stone-50/50">
+      <SheetContent className="w-full sm:max-w-md bg-[#F4F1EA]/50">
         <SheetHeader className="mb-6">
-          <SheetTitle className="flex items-center gap-2 text-stone-900">
-            <BookmarkCheck className="w-5 h-5 text-emerald-600" />
+          <SheetTitle className="flex items-center gap-2 text-[#222]">
+            <BookmarkCheck className="w-5 h-5 text-[#2D5A27]" />
             My Saved Recipes
           </SheetTitle>
           <SheetDescription>
@@ -543,7 +541,7 @@ function SavedRecipesDrawer({
         </SheetHeader>
 
         {recipes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-stone-400">
+          <div className="flex flex-col items-center justify-center py-16 text-[#a8a29e]">
             <Bookmark className="w-12 h-12 mb-3 opacity-30" />
             <p className="text-sm font-medium">No saved recipes yet</p>
             <p className="text-xs mt-1 text-center max-w-[240px]">
@@ -567,15 +565,15 @@ function SavedRecipesDrawer({
                   layout
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-xl border border-stone-200 p-4 hover:shadow-sm transition-shadow"
+                  className="bg-white rounded-xl border border-[#d6d3c8] p-4 hover:shadow-sm transition-shadow"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="bg-emerald-100 rounded-lg p-2 mt-0.5 shrink-0">
-                      <Icon className="w-4 h-4 text-emerald-700" />
+                    <div className="bg-[#e8f0e6] rounded-lg p-2 mt-0.5 shrink-0">
+                      <Icon className="w-4 h-4 text-[#2D5A27]" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-stone-800 truncate">{saved.name}</p>
-                      <p className="text-[11px] text-stone-400 mt-0.5">
+                      <p className="text-sm font-semibold text-[#222] truncate">{saved.name}</p>
+                      <p className="text-[11px] text-[#a8a29e] mt-0.5">
                         {saved.harvestEntries
                           .map((e) => {
                             const p = PRODUCE.find((pr) => pr.id === e.produceId);
@@ -583,7 +581,7 @@ function SavedRecipesDrawer({
                           })
                           .join(' + ')}
                       </p>
-                      <p className="text-[10px] text-stone-400 mt-1">{dateStr}</p>
+                      <p className="text-[10px] text-[#a8a29e] mt-1">{dateStr}</p>
                     </div>
                   </div>
                   <div className="flex gap-2 mt-3">
@@ -593,7 +591,7 @@ function SavedRecipesDrawer({
                         onLoad(saved);
                         onOpenChange(false);
                       }}
-                      className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8"
+                      className="flex-1 bg-[#2D5A27] hover:bg-emerald-700 text-white text-xs h-8"
                     >
                       <Scale className="w-3 h-3 mr-1" />
                       Load & Tweak
@@ -602,7 +600,7 @@ function SavedRecipesDrawer({
                       size="sm"
                       variant="outline"
                       onClick={() => downloadRecipeText(saved.recipe)}
-                      className="text-xs h-8 border-stone-300 text-stone-600"
+                      className="text-xs h-8 border-stone-300 text-[#555]"
                     >
                       <FileText className="w-3 h-3" />
                     </Button>
@@ -610,7 +608,7 @@ function SavedRecipesDrawer({
                       size="sm"
                       variant="ghost"
                       onClick={() => onDelete(saved.id)}
-                      className="text-xs h-8 text-stone-400 hover:text-red-500 hover:bg-red-50"
+                      className="text-xs h-8 text-[#a8a29e] hover:text-red-500 hover:bg-red-50"
                     >
                       <Trash2 className="w-3 h-3" />
                     </Button>
@@ -646,7 +644,6 @@ export default function PreservingCalculator({
 
   const { savedRecipes, saveRecipe, deleteRecipe, isRecipeSaved } = useRecipeStore();
 
-  // Filter produce by selected method
   const availableProduce = useMemo(() => {
     if (!selectedMethod) return PRODUCE;
     return PRODUCE.filter((p) => {
@@ -657,7 +654,6 @@ export default function PreservingCalculator({
     });
   }, [selectedMethod]);
 
-  // Derive recipe from inputs
   const recipe: RecipeOutput | null = useMemo(() => {
     if (selectedMethod && harvestEntries.length > 0 && harvestEntries.every((e) => e.weightGrams > 0)) {
       return generateRecipe(harvestEntries, selectedMethod);
@@ -699,20 +695,18 @@ export default function PreservingCalculator({
     setSelectedMethod(null);
   }, []);
 
- 
+  const handleSave = useCallback(() => {
+    if (!recipe || !selectedMethod) return;
+    saveRecipe(selectedMethod, harvestEntries, recipe);
+    setSaveToast('Recipe saved!');
+    setTimeout(() => setSaveToast(null), 2000);
+  }, [recipe, selectedMethod, harvestEntries, saveRecipe]);
+
   const handleExport = useCallback(() => {
     if (!recipe) return;
     downloadRecipeText(recipe);
   }, [recipe]);
 
-  const handleShare = useCallback(async () => {
-    if (!selectedMethod || harvestEntries.length === 0) return;
-    const ok = await copyShareLink(selectedMethod, harvestEntries);
-    if (ok) {
-      setSaveToast('Link copied to clipboard!');
-      setTimeout(() => setSaveToast(null), 2000);
-    }
-  }, [selectedMethod, harvestEntries]);
 
   const handlePrint = useCallback(() => {
     window.print();
@@ -723,27 +717,26 @@ export default function PreservingCalculator({
     setHarvestEntries(
       saved.harvestEntries.map((e) => ({ ...e }))
     );
-    // Scroll to top so user sees the restored state
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   const canGenerate = selectedMethod !== null && harvestEntries.length > 0 && harvestEntries.every((e) => e.weightGrams > 0);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-amber-50/60 via-white to-emerald-50/40" data-page="preserving">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#f2f7f0]/60 via-white to-[#e8f0e6]/40" data-page="preserving">
       {/* Sub-header with page-specific actions */}
-      <div className="bg-white/50 border-b border-stone-100">
+      <div className="bg-white/50 border-b border-[#d6d3c8]/60">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-end gap-1.5">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setSavedDrawerOpen(true)}
-            className="text-stone-500 hover:text-emerald-700 hover:bg-emerald-50 text-xs relative"
+            className="text-[#6b6559] hover:text-[#2D5A27] hover:bg-[#f2f7f0] text-xs relative"
           >
             <FolderOpen className="w-3.5 h-3.5 sm:mr-1.5" />
             <span className="hidden sm:inline">My Recipes</span>
             {savedRecipes.length > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-emerald-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#f2f7f0]0 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
                 {savedRecipes.length}
               </span>
             )}
@@ -753,7 +746,7 @@ export default function PreservingCalculator({
               variant="ghost"
               size="sm"
               onClick={handleReset}
-              className="text-stone-400 hover:text-stone-600 text-xs"
+              className="text-[#a8a29e] hover:text-[#555] text-xs"
             >
               <RotateCcw className="w-3.5 h-3.5 sm:mr-1" />
               <span className="hidden sm:inline">Reset</span>
@@ -770,7 +763,7 @@ export default function PreservingCalculator({
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="fixed top-16 left-1/2 -translate-x-1/2 z-[60] bg-emerald-600 text-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2"
+              className="fixed top-16 left-1/2 -translate-x-1/2 z-[60] bg-[#2D5A27] text-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2"
             >
               <CheckCircle2 className="w-4 h-4" />
               {saveToast}
@@ -784,21 +777,21 @@ export default function PreservingCalculator({
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8 sm:mb-10"
         >
-          <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 mb-2">
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#222] mb-2">
             What Can You Make With{' '}
-            <span className="text-emerald-600">Your Harvest?</span>
+            <span className="text-[#2D5A27]">Your Harvest?</span>
           </h2>
-          <p className="text-sm sm:text-base text-stone-500 max-w-lg mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base text-[#6b6559] max-w-lg mx-auto leading-relaxed">
             Traditional canning recipes demand 10 pounds of tomatoes. But your balcony just gave you
             exactly {harvestEntries.length > 0 ? (
-              <span className="font-semibold text-stone-700">
+              <span className="font-semibold text-[#444]">
                 {harvestEntries.map((e) => {
                   const p = PRODUCE.find((pr) => pr.id === e.produceId);
                   return `${e.weightGrams}g of ${p?.name ?? 'produce'}`;
                 }).join(' and ')}
               </span>
             ) : (
-              <span className="italic text-stone-400">your micro-harvest</span>
+              <span className="italic text-[#a8a29e]">your micro-harvest</span>
             )}
             . Enter it below and get a custom, safe, small-batch recipe scaled to fit a single Mason
             jar.
@@ -813,10 +806,10 @@ export default function PreservingCalculator({
           className="mb-6 sm:mb-8"
         >
           <div className="flex items-center gap-2 mb-4">
-            <span className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">
+            <span className="w-7 h-7 rounded-full bg-[#2D5A27] text-white flex items-center justify-center text-xs font-bold">
               1
             </span>
-            <h3 className="font-semibold text-stone-800">Choose Your Preserving Method</h3>
+            <h3 className="font-semibold text-[#222]">Choose Your Preserving Method</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {METHOD_INFO.map((method) => (
@@ -840,15 +833,15 @@ export default function PreservingCalculator({
               className="mb-6 sm:mb-8"
             >
               <div className="flex items-center gap-2 mb-4">
-                <span className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">
+                <span className="w-7 h-7 rounded-full bg-[#2D5A27] text-white flex items-center justify-center text-xs font-bold">
                   2
                 </span>
-                <h3 className="font-semibold text-stone-800">Add Your Harvest</h3>
-                <Badge variant="secondary" className="text-[10px] bg-stone-100">
+                <h3 className="font-semibold text-[#222]">Add Your Harvest</h3>
+                <Badge variant="secondary" className="text-[10px] bg-[#F4F1EA]">
                   {availableProduce.length} options
                 </Badge>
               </div>
-              <Card className="border-stone-200 shadow-sm">
+              <Card className="border-[#d6d3c8] shadow-sm">
                 <CardContent className="pt-5">
                   <HarvestInput
                     entries={harvestEntries}
@@ -873,16 +866,16 @@ export default function PreservingCalculator({
               transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             >
               <div className="flex items-center gap-2 mb-4">
-                <span className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">
+                <span className="w-7 h-7 rounded-full bg-[#2D5A27] text-white flex items-center justify-center text-xs font-bold">
                   3
                 </span>
-                <h3 className="font-semibold text-stone-800">Your Custom Recipe</h3>
-                <Badge className="bg-emerald-100 text-emerald-700 text-[10px] border-0">
+                <h3 className="font-semibold text-[#222]">Your Custom Recipe</h3>
+                <Badge className="bg-[#e8f0e6] text-[#2D5A27] text-[10px] border-0">
                   <Sparkles className="w-3 h-3 mr-1" />
                   Generated
                 </Badge>
               </div>
-              <Card className="border-stone-200 shadow-md overflow-hidden" data-print-recipe>
+              <Card className="border-[#d6d3c8] shadow-md overflow-hidden" data-print-recipe>
                 <CardContent className="pt-5">
                   <RecipeCard
                     recipe={recipe}
@@ -897,7 +890,22 @@ export default function PreservingCalculator({
           )}
         </AnimatePresence>
 
-        {/* Cross-sell upsell — hidden on print */}
+        {/* Shelf-Life Tracker */}
+        {recipe && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className='mb-6 print-hide'
+          >
+            <ShelfLifeTracker
+              method={{ 'quick-pickle': 'Quick Pickle', 'ferment': 'Lacto-Ferment', 'water-bath': 'Water-Bath Can' }[selectedMethod]}
+              itemName={recipe.title}
+            />
+          </motion.div>
+        )}
+
+        {/* Cross-sell upsell */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -906,19 +914,19 @@ export default function PreservingCalculator({
         >
           <Link
             href="/bulk-buy"
-            className="block rounded-xl border border-stone-200 bg-gradient-to-r from-amber-50 to-stone-50 p-4 sm:p-5 no-underline hover:shadow-md hover:border-amber-200 transition-all"
+            className="block rounded-xl border border-[#d6d3c8] bg-gradient-to-r from-[#f2f7f0] to-[#F4F1EA] p-4 sm:p-5 no-underline hover:shadow-md hover:border-[#2D5A27]/30 transition-all"
           >
             <div className="flex items-start gap-3">
-              <div className="bg-amber-100 rounded-lg p-2.5 shrink-0">
-                <ShoppingCart className="w-5 h-5 text-amber-600" />
+              <div className="bg-[#e8f0e6] rounded-lg p-2.5 shrink-0">
+                <ShoppingCart className="w-5 h-5 text-[#2D5A27]" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-stone-400 uppercase tracking-wide mb-0.5">Also from Balcony-to-Pantry</p>
-                <p className="text-sm font-semibold text-stone-800">Buying in bulk? Get a custom diversion plan.</p>
-                <p className="text-xs text-stone-500 mt-1">
+                <p className="text-xs text-[#a8a29e] uppercase tracking-wide mb-0.5">Also from Homesteading Guide</p>
+                <p className="text-sm font-semibold text-[#222]">Buying in bulk? Get a custom diversion plan.</p>
+                <p className="text-xs text-[#6b6559] mt-1">
                   20 lbs of carrots? 50 lbs of potatoes? Learn exactly how to process and store it all in your apartment.
                 </p>
-                <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 mt-2">
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-[#2D5A27] mt-2">
                   Try the Bulk-Buy Diversion Matrix
                   <ArrowRight className="w-3 h-3" />
                 </span>
