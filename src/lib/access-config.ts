@@ -48,7 +48,7 @@ export const ACCESS_CONFIG: AccessConfig = {
     codes: [
       'GREENFINGERS', // Demo code — replace with real buyer codes
     ],
-    purchaseUrl: 'https://homesteadingguide.com/preserving-calculator',
+    purchaseUrl: 'https://payhip.com/b/FwrS2',
   },
   'bulk-buy': {
     label: 'Bulk-Buy Pantry Calculator',
@@ -56,7 +56,7 @@ export const ACCESS_CONFIG: AccessConfig = {
     codes: [
       'GREENTHUMB', // Demo code — replace with real buyer codes
     ],
-    purchaseUrl: 'https://homesteadingguide.com/bulk-buy-calculator',
+    purchaseUrl: 'https://payhip.com/b/WGndS',
   },
 };
 
