@@ -823,7 +823,7 @@ export default function BulkBuyCalculator({
               </motion.div>
             )}
 
-        {/* Cross-sell upsell — teaser links to purchase page, not direct access */}
+        {/* Cross-sell upsell — AccessGate on the target page handles paywall */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -831,9 +831,7 @@ export default function BulkBuyCalculator({
           className="mt-8 mb-4 print-hide"
         >
           <a
-            href="https://homesteadingguide.com/preserving-calculator"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/preserving"
             className="block rounded-xl border border-[#d6d3c8] bg-gradient-to-r from-emerald-50 to-[#F4F1EA] p-4 sm:p-5 no-underline hover:shadow-md hover:border-emerald-200 transition-all"
           >
             <div className="flex items-start gap-3">
@@ -847,7 +845,7 @@ export default function BulkBuyCalculator({
                   Quick pickle, lacto-ferment, or water-bath can — scaled to fit a single Mason jar.
                 </p>
                 <span className="inline-flex items-center gap-1 text-xs font-medium text-[#2D5A27] mt-2">
-                  Get the Preserving Calculator
+                  Try the Preserving Calculator
                   <ArrowRight className="w-3 h-3" />
                 </span>
               </div>
