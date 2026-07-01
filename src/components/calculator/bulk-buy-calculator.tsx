@@ -8,7 +8,6 @@ import {
   Clock,
   Download,
   Printer,
-  Link2,
   Sparkles,
   RotateCcw,
   CheckCircle2,
@@ -50,6 +49,7 @@ import {
 import {
   downloadDiversionText,
 } from '@/hooks/use-recipe-store';
+import ShelfLifeTracker from '@/components/calculator/shelf-life-tracker';
 
 // ---- Helpers ----
 
@@ -70,8 +70,8 @@ const STORAGE_LABELS: Record<StorageLocation, string> = {
 const STORAGE_COLORS: Record<StorageLocation, string> = {
   fridge: 'bg-sky-100 text-sky-700 border-sky-200',
   freezer: 'bg-blue-100 text-blue-700 border-blue-200',
-  pantry: 'bg-amber-100 text-amber-700 border-amber-200',
-  counter: 'bg-stone-100 text-stone-700 border-stone-200',
+  pantry: 'bg-[#e8f0e6] text-[#2D5A27] border-amber-200',
+  counter: 'bg-[#F4F1EA] text-[#444] border-[#d6d3c8]',
 };
 
 function getMethodIcon(methodName: string): React.ElementType {
@@ -110,10 +110,10 @@ function MiniStat({
   value: string;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-stone-200 p-3 text-center">
-      <Icon className="w-4 h-4 mx-auto text-stone-400 mb-1" />
-      <p className="text-xs text-stone-500">{label}</p>
-      <p className="text-sm font-semibold text-stone-800 mt-0.5">{value}</p>
+    <div className="bg-white rounded-xl border border-[#d6d3c8] p-3 text-center">
+      <Icon className="w-4 h-4 mx-auto text-[#a8a29e] mb-1" />
+      <p className="text-xs text-[#6b6559]">{label}</p>
+      <p className="text-sm font-semibold text-[#222] mt-0.5">{value}</p>
     </div>
   );
 }
@@ -151,8 +151,8 @@ function SpaceMathBar({ plan }: { plan: DiversionPlan }) {
   return (
     <div className="space-y-3">
       {/* Total space callout */}
-      <div className="flex items-center justify-center gap-2 text-sm font-semibold text-stone-700 bg-emerald-50 rounded-lg px-3 py-2">
-        <BoxSelect className="w-4 h-4 text-emerald-600" />
+      <div className="flex items-center justify-center gap-2 text-sm font-semibold text-[#444] bg-[#f2f7f0] rounded-lg px-3 py-2">
+        <BoxSelect className="w-4 h-4 text-[#2D5A27]" />
         Total after processing: {totalCubicFt.toFixed(2)} cubic feet
       </div>
 
@@ -210,7 +210,7 @@ function DiversionStepCard({ step, index }: { step: DiversionStep; index: number
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.1 }}
     >
-      <Card className="border-stone-200 shadow-sm overflow-hidden">
+      <Card className="border-[#d6d3c8] shadow-sm overflow-hidden">
         <div className="flex items-stretch">
           {/* Left accent bar */}
           <div className={`w-1.5 shrink-0 ${
@@ -222,30 +222,30 @@ function DiversionStepCard({ step, index }: { step: DiversionStep; index: number
           <CardContent className="pt-4 pb-4 flex-1">
             {/* Header row */}
             <div className="flex items-start gap-3 mb-3">
-              <div className="bg-stone-100 rounded-lg p-2 shrink-0">
-                <MethodIcon className="w-4 h-4 text-stone-600" />
+              <div className="bg-[#F4F1EA] rounded-lg p-2 shrink-0">
+                <MethodIcon className="w-4 h-4 text-[#555]" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h4 className="text-sm font-semibold text-stone-900">{step.method.name}</h4>
+                  <h4 className="text-sm font-semibold text-[#222]">{step.method.name}</h4>
                   <Badge variant="outline" className={`text-[10px] border ${STORAGE_COLORS[step.storageLocation]}`}>
                     {STORAGE_LABELS[step.storageLocation]}
                   </Badge>
                 </div>
-                <p className="text-xs text-stone-500 mt-0.5">{step.method.description}</p>
+                <p className="text-xs text-[#6b6559] mt-0.5">{step.method.description}</p>
               </div>
             </div>
 
             {/* Weight allocation */}
-            <div className="flex items-center gap-2 mb-3 bg-stone-50 rounded-lg px-3 py-2">
-              <Weight className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span className="text-sm font-bold text-stone-800">
+            <div className="flex items-center gap-2 mb-3 bg-[#F4F1EA] rounded-lg px-3 py-2">
+              <Weight className="w-3.5 h-3.5 text-[#2D5A27] shrink-0" />
+              <span className="text-sm font-bold text-[#222]">
                 {step.weightLbs} lbs
               </span>
               <span className="text-stone-300">→</span>
-              <ArrowRight className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-              <span className="text-sm font-semibold text-emerald-700">{step.method.name}</span>
-              <span className="ml-auto text-xs text-stone-500">
+              <ArrowRight className="w-3.5 h-3.5 text-[#a8a29e] shrink-0" />
+              <span className="text-sm font-semibold text-[#2D5A27]">{step.method.name}</span>
+              <span className="ml-auto text-xs text-[#6b6559]">
                 ({step.weightGrams} g)
               </span>
             </div>
@@ -253,31 +253,31 @@ function DiversionStepCard({ step, index }: { step: DiversionStep; index: number
             {/* Details grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
               <div className="flex items-center gap-2">
-                <BoxSelect className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                <BoxSelect className="w-3.5 h-3.5 text-[#a8a29e] shrink-0" />
                 <div>
-                  <p className="text-[10px] text-stone-400 uppercase tracking-wide">Space Used</p>
-                  <p className="text-xs font-medium text-stone-700">{step.spaceUsed}</p>
+                  <p className="text-[10px] text-[#a8a29e] uppercase tracking-wide">Space Used</p>
+                  <p className="text-xs font-medium text-[#444]">{step.spaceUsed}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Clock className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                <Clock className="w-3.5 h-3.5 text-[#a8a29e] shrink-0" />
                 <div>
-                  <p className="text-[10px] text-stone-400 uppercase tracking-wide">Processing Time</p>
-                  <p className="text-xs font-medium text-stone-700">{step.processingTime}</p>
+                  <p className="text-[10px] text-[#a8a29e] uppercase tracking-wide">Processing Time</p>
+                  <p className="text-xs font-medium text-[#444]">{step.processingTime}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Package className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                <Package className="w-3.5 h-3.5 text-[#a8a29e] shrink-0" />
                 <div>
-                  <p className="text-[10px] text-stone-400 uppercase tracking-wide">Shelf Life</p>
-                  <p className="text-xs font-medium text-stone-700">{step.shelfLife}</p>
+                  <p className="text-[10px] text-[#a8a29e] uppercase tracking-wide">Shelf Life</p>
+                  <p className="text-xs font-medium text-[#444]">{step.shelfLife}</p>
                 </div>
               </div>
             </div>
 
             {/* Instructions */}
-            <div className="bg-amber-50/50 rounded-lg px-3 py-2.5 border border-amber-100/50">
-              <p className="text-xs text-stone-700 leading-relaxed">{step.instructions}</p>
+            <div className="bg-[#f2f7f0]/50 rounded-lg px-3 py-2.5 border border-[#e8f0e6]/50">
+              <p className="text-xs text-[#444] leading-relaxed">{step.instructions}</p>
             </div>
           </CardContent>
         </div>
@@ -290,7 +290,7 @@ function DiversionPlanCard({
   plan,
   item,
   totalLbs,
-   onExport,
+  onExport,
   onPrint,
 }: {
   plan: DiversionPlan;
@@ -308,14 +308,14 @@ function DiversionPlanCard({
     >
       {/* Plan Header */}
       <div className="text-center space-y-2 py-2">
-        <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 text-xs font-medium px-3 py-1 rounded-full">
+        <div className="inline-flex items-center gap-2 bg-[#e8f0e6] text-[#2D5A27] text-xs font-medium px-3 py-1 rounded-full">
           <Sparkles className="w-3.5 h-3.5" />
           Diversion Plan Generated
         </div>
-        <h2 className="text-xl sm:text-2xl font-bold text-stone-900">
+        <h2 className="text-xl sm:text-2xl font-bold text-[#222]">
           {item.emoji} {item.name} — {totalLbs} lbs
         </h2>
-        <p className="text-sm text-stone-500">
+        <p className="text-sm text-[#6b6559]">
           {plan.steps.length} processing methods to fit everything in your apartment
         </p>
       </div>
@@ -323,11 +323,11 @@ function DiversionPlanCard({
       {/* Action buttons — hidden on print */}
       <div className="flex flex-col items-center gap-2 print-hide">
         <div className="flex items-center gap-1">
-                   <Button
+          <Button
             variant="ghost"
             size="sm"
             onClick={onExport}
-            className="text-stone-500 hover:text-stone-800 hover:bg-stone-100 text-xs h-8 px-2.5"
+            className="text-[#6b6559] hover:text-[#222] hover:bg-[#F4F1EA] text-xs h-8 px-2.5"
           >
             <Download className="w-3.5 h-3.5 mr-1.5" />
             <span className="hidden sm:inline">Download</span>
@@ -336,7 +336,7 @@ function DiversionPlanCard({
             variant="ghost"
             size="sm"
             onClick={onPrint}
-            className="text-stone-500 hover:text-stone-800 hover:bg-stone-100 text-xs h-8 px-2.5 print-hide"
+            className="text-[#6b6559] hover:text-[#222] hover:bg-[#F4F1EA] text-xs h-8 px-2.5 print-hide"
           >
             <Printer className="w-3.5 h-3.5 mr-1.5" />
             <span className="hidden sm:inline">Print</span>
@@ -353,7 +353,7 @@ function DiversionPlanCard({
       </div>
 
       <Tabs defaultValue="plan" className="w-full">
-        <TabsList className="w-full grid grid-cols-3 bg-stone-100">
+        <TabsList className="w-full grid grid-cols-3 bg-[#F4F1EA]">
           <TabsTrigger value="plan" className="text-xs sm:text-sm">
             <ArrowRight className="w-3.5 h-3.5 mr-1 hidden sm:inline" />
             Diversion Plan
@@ -372,10 +372,10 @@ function DiversionPlanCard({
         <TabsContent value="plan">
           <div className="space-y-4 mt-3">
             {/* Space Math Summary bar */}
-            <Card className="border-stone-200 shadow-sm">
+            <Card className="border-[#d6d3c8] shadow-sm">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm flex items-center gap-2">
-                  <BoxSelect className="w-4 h-4 text-amber-500" />
+                  <BoxSelect className="w-4 h-4 text-[#2D5A27]" />
                   Space Math Summary
                 </CardTitle>
               </CardHeader>
@@ -394,10 +394,10 @@ function DiversionPlanCard({
         {/* Space Math Tab */}
         <TabsContent value="space">
           <div className="space-y-4 mt-3">
-            <Card className="border-stone-200 shadow-sm">
+            <Card className="border-[#d6d3c8] shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <BoxSelect className="w-4 h-4 text-amber-500" />
+                  <BoxSelect className="w-4 h-4 text-[#2D5A27]" />
                   Storage Footprint Breakdown
                 </CardTitle>
               </CardHeader>
@@ -406,10 +406,10 @@ function DiversionPlanCard({
               </CardContent>
             </Card>
 
-            <Card className="border-stone-200 shadow-sm">
+            <Card className="border-[#d6d3c8] shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Package className="w-4 h-4 text-stone-500" />
+                  <Package className="w-4 h-4 text-[#6b6559]" />
                   Per-Method Space Details
                 </CardTitle>
               </CardHeader>
@@ -429,10 +429,10 @@ function DiversionPlanCard({
                           <Icon className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-stone-800">
+                          <p className="text-sm font-medium text-[#222]">
                             {step.weightLbs} lbs → {step.method.name}
                           </p>
-                          <p className="text-xs text-stone-500">
+                          <p className="text-xs text-[#6b6559]">
                             {STORAGE_LABELS[step.storageLocation]} · {step.spaceUsed}
                           </p>
                         </div>
@@ -443,8 +443,8 @@ function DiversionPlanCard({
               </CardContent>
             </Card>
 
-            <div className="flex items-start gap-2 text-xs text-stone-500 bg-amber-50 rounded-lg px-3 py-2">
-              <Info className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="flex items-start gap-2 text-xs text-[#6b6559] bg-amber-50 rounded-lg px-3 py-2">
+              <Info className="w-3.5 h-3.5 text-[#2D5A27] shrink-0 mt-0.5" />
               <span>
                 The &ldquo;Space Math&rdquo; shows the storage footprint <em>after</em> processing.
                 Raw {totalLbs} lbs of {item.name.toLowerCase()} would take up significantly more space.
@@ -457,10 +457,10 @@ function DiversionPlanCard({
         {/* Tips & Notes Tab */}
         <TabsContent value="tips">
           <div className="space-y-4 mt-3">
-            <Card className="border-stone-200 shadow-sm">
+            <Card className="border-[#d6d3c8] shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Lightbulb className="w-4 h-4 text-amber-500" />
+                  <Lightbulb className="w-4 h-4 text-[#2D5A27]" />
                   Bulk Buying Tips for {item.name}
                 </CardTitle>
               </CardHeader>
@@ -474,20 +474,20 @@ function DiversionPlanCard({
                       transition={{ delay: i * 0.08 }}
                       className="flex gap-3"
                     >
-                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-[#e8f0e6] text-[#2D5A27] flex items-center justify-center text-xs font-bold">
                         {i + 1}
                       </span>
-                      <p className="text-sm text-stone-700 leading-relaxed pt-0.5">{tip}</p>
+                      <p className="text-sm text-[#444] leading-relaxed pt-0.5">{tip}</p>
                     </motion.li>
                   ))}
                 </ul>
               </CardContent>
             </Card>
 
-            <Card className="border-stone-200 shadow-sm">
+            <Card className="border-[#d6d3c8] shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-stone-500" />
+                  <BookOpen className="w-4 h-4 text-[#6b6559]" />
                   General Bulk-Buy Advice
                 </CardTitle>
               </CardHeader>
@@ -501,7 +501,7 @@ function DiversionPlanCard({
                     'Freeze flat bags for easy stacking',
                     'Use a food processor for bulk shredding/dicing',
                   ].map((tip, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-stone-700">
+                    <li key={i} className="flex items-start gap-2 text-sm text-[#444]">
                       <span className="text-emerald-500 mt-0.5">•</span>
                       {tip}
                     </li>
@@ -569,9 +569,6 @@ export default function BulkBuyCalculator({
     showToast('Downloaded!');
   }, [plan, selectedItem, parsedWeight, showToast]);
 
-  
-    }
-  }, [plan, selectedItem, parsedWeight, showToast]);
 
   const handlePrint = useCallback(() => {
     window.print();
@@ -589,7 +586,7 @@ export default function BulkBuyCalculator({
   const canGenerate = selectedItem !== null && parsedWeight >= 0.5;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-amber-50/60 via-white to-emerald-50/40" data-page="bulk-buy">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#f2f7f0]/60 via-white to-[#e8f0e6]/40" data-page="bulk-buy">
       {/* Sub-header */}
       <div className="bg-white/50 border-b border-stone-100">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-end gap-1.5">
@@ -598,7 +595,7 @@ export default function BulkBuyCalculator({
               variant="ghost"
               size="sm"
               onClick={handleReset}
-              className="text-stone-400 hover:text-stone-600 text-xs"
+              className="text-[#a8a29e] hover:text-[#555] text-xs"
             >
               <RotateCcw className="w-3.5 h-3.5 sm:mr-1" />
               <span className="hidden sm:inline">Reset</span>
@@ -615,7 +612,7 @@ export default function BulkBuyCalculator({
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="fixed top-16 left-1/2 -translate-x-1/2 z-[60] bg-emerald-600 text-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2"
+              className="fixed top-16 left-1/2 -translate-x-1/2 z-[60] bg-[#2D5A27] text-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2"
             >
               <CheckCircle2 className="w-4 h-4" />
               {toast}
@@ -629,17 +626,17 @@ export default function BulkBuyCalculator({
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8 sm:mb-10"
         >
-          <h2 className="text-2xl sm:text-3xl font-bold text-stone-900 mb-2">
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#222] mb-2">
             Buy in Bulk.{' '}
-            <span className="text-emerald-600">Fit It All In.</span>
+            <span className="text-[#2D5A27]">Fit It All In.</span>
           </h2>
-          <p className="text-sm sm:text-base text-stone-500 max-w-lg mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base text-[#6b6559] max-w-lg mx-auto leading-relaxed">
             {selectedItem ? (
-              <span className="font-semibold text-stone-700">
+              <span className="font-semibold text-[#444]">
                 {parsedWeight} lbs of {selectedItem.name}
               </span>
             ) : (
-              <span className="italic text-stone-400">
+              <span className="italic text-[#a8a29e]">
                 20 lbs of carrots, 50 lbs of potatoes…
               </span>
             )}
@@ -657,19 +654,19 @@ export default function BulkBuyCalculator({
           className="mb-6 sm:mb-8"
         >
           <div className="flex items-center gap-2 mb-4">
-            <span className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">
+            <span className="w-7 h-7 rounded-full bg-[#2D5A27] text-white flex items-center justify-center text-xs font-bold">
               1
             </span>
-            <h3 className="font-semibold text-stone-800">Choose Your Bulk Buy</h3>
-            <Badge variant="secondary" className="text-[10px] bg-stone-100">
+            <h3 className="font-semibold text-[#222]">Choose Your Bulk Buy</h3>
+            <Badge variant="secondary" className="text-[10px] bg-[#F4F1EA]">
               {BULK_ITEMS.length} items
             </Badge>
           </div>
-          <Card className="border-stone-200 shadow-sm">
+          <Card className="border-[#d6d3c8] shadow-sm">
             <CardContent className="pt-5 space-y-4">
               {/* Item selector */}
               <div className="space-y-2">
-                <Label className="text-sm text-stone-600">Produce Item</Label>
+                <Label className="text-sm text-[#555]">Produce Item</Label>
                 <Select value={selectedItemId} onValueChange={setSelectedItemId}>
                   <SelectTrigger className="w-full bg-white">
                     <SelectValue placeholder="Choose your bulk produce..." />
@@ -680,7 +677,7 @@ export default function BulkBuyCalculator({
                         <span className="flex items-center gap-2">
                           <span>{item.emoji}</span>
                           <span>{item.name}</span>
-                          <Badge variant="outline" className="text-[9px] ml-1 bg-stone-50 border-stone-200 text-stone-400 capitalize">
+                          <Badge variant="outline" className="text-[9px] ml-1 bg-[#F4F1EA] border-[#d6d3c8] text-[#a8a29e] capitalize">
                             {item.category}
                           </Badge>
                         </span>
@@ -692,7 +689,7 @@ export default function BulkBuyCalculator({
 
               {/* Weight input */}
               <div className="space-y-2">
-                <Label className="text-sm text-stone-600">Total Weight (lbs)</Label>
+                <Label className="text-sm text-[#555]">Total Weight (lbs)</Label>
                 <div className="flex items-center gap-2">
                   <Input
                     type="number"
@@ -704,13 +701,13 @@ export default function BulkBuyCalculator({
                     placeholder="10"
                     className="w-32 h-10 text-center text-lg font-semibold"
                   />
-                  <span className="text-sm text-stone-500">lbs</span>
+                  <span className="text-sm text-[#6b6559]">lbs</span>
                 </div>
               </div>
 
               {/* Quick-select buttons */}
               <div className="space-y-2">
-                <Label className="text-xs text-stone-400">Popular bulk sizes</Label>
+                <Label className="text-xs text-[#a8a29e]">Popular bulk sizes</Label>
                 <div className="flex flex-wrap gap-2">
                   {[5, 10, 20, 50].map((lbs) => (
                     <motion.button
@@ -720,8 +717,8 @@ export default function BulkBuyCalculator({
                       onClick={() => handleQuickWeight(lbs)}
                       className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
                         parseFloat(weightLbs) === lbs
-                          ? 'bg-emerald-600 text-white border-emerald-600'
-                          : 'bg-white text-stone-600 border-stone-200 hover:border-emerald-300 hover:bg-emerald-50'
+                          ? 'bg-[#2D5A27] text-white border-emerald-600'
+                          : 'bg-white text-[#555] border-[#d6d3c8] hover:border-[#2D5A27]/40 hover:bg-[#f2f7f0]'
                       }`}
                     >
                       {lbs} lbs
@@ -732,7 +729,7 @@ export default function BulkBuyCalculator({
 
               {/* Item grid for quick browsing */}
               <div className="pt-2">
-                <p className="text-xs text-stone-400 mb-2">Or tap to select:</p>
+                <p className="text-xs text-[#a8a29e] mb-2">Or tap to select:</p>
                 <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5">
                   {BULK_ITEMS.map((item) => (
                     <motion.button
@@ -742,12 +739,12 @@ export default function BulkBuyCalculator({
                       onClick={() => setSelectedItemId(item.id)}
                       className={`flex flex-col items-center gap-0.5 p-2 rounded-xl border transition-colors ${
                         selectedItemId === item.id
-                          ? 'bg-emerald-50 border-emerald-300 shadow-sm'
-                          : 'bg-white border-stone-100 hover:border-stone-300 hover:shadow-sm'
+                          ? 'bg-[#f2f7f0] border-[#2D5A27]/40 shadow-sm'
+                          : 'bg-white border-stone-100 hover:border-[#b5b0a3] hover:shadow-sm'
                       }`}
                     >
                       <span className="text-lg sm:text-xl">{item.emoji}</span>
-                      <span className="text-[9px] sm:text-[10px] text-stone-600 leading-tight text-center truncate w-full">
+                      <span className="text-[9px] sm:text-[10px] text-[#555] leading-tight text-center truncate w-full">
                         {item.name}
                       </span>
                     </motion.button>
@@ -768,23 +765,22 @@ export default function BulkBuyCalculator({
               transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             >
               <div className="flex items-center gap-2 mb-4">
-                <span className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">
+                <span className="w-7 h-7 rounded-full bg-[#2D5A27] text-white flex items-center justify-center text-xs font-bold">
                   2
                 </span>
-                <h3 className="font-semibold text-stone-800">Your Diversion Plan</h3>
-                <Badge className="bg-emerald-100 text-emerald-700 text-[10px] border-0">
+                <h3 className="font-semibold text-[#222]">Your Diversion Plan</h3>
+                <Badge className="bg-[#e8f0e6] text-[#2D5A27] text-[10px] border-0">
                   <Sparkles className="w-3 h-3 mr-1" />
                   Generated
                 </Badge>
               </div>
-              <Card className="border-stone-200 shadow-md overflow-hidden" data-print-recipe>
+              <Card className="border-[#d6d3c8] shadow-md overflow-hidden" data-print-recipe>
                 <CardContent className="pt-5">
                   <DiversionPlanCard
                     plan={plan}
                     item={selectedItem}
                     totalLbs={parsedWeight}
                     onExport={handleExport}
-                    onShare={handleShare}
                     onPrint={handlePrint}
                   />
                 </CardContent>
@@ -792,6 +788,18 @@ export default function BulkBuyCalculator({
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Shelf-Life Tracker - shown after plan is generated */}
+            {plan && selectedItem && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className='mb-6 print-hide'
+              >
+                <ShelfLifeTracker />
+              </motion.div>
+            )}
 
         {/* Cross-sell upsell — hidden on print */}
         <motion.div
@@ -802,19 +810,19 @@ export default function BulkBuyCalculator({
         >
           <Link
             href="/preserving"
-            className="block rounded-xl border border-stone-200 bg-gradient-to-r from-emerald-50 to-stone-50 p-4 sm:p-5 no-underline hover:shadow-md hover:border-emerald-200 transition-all"
+            className="block rounded-xl border border-[#d6d3c8] bg-gradient-to-r from-emerald-50 to-[#F4F1EA] p-4 sm:p-5 no-underline hover:shadow-md hover:border-emerald-200 transition-all"
           >
             <div className="flex items-start gap-3">
-              <div className="bg-emerald-100 rounded-lg p-2.5 shrink-0">
-                <Leaf className="w-5 h-5 text-emerald-600" />
+              <div className="bg-[#e8f0e6] rounded-lg p-2.5 shrink-0">
+                <Leaf className="w-5 h-5 text-[#2D5A27]" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-stone-400 uppercase tracking-wide mb-0.5">Also from Balcony-to-Pantry</p>
-                <p className="text-sm font-semibold text-stone-800">Got a micro-harvest? Get custom preserving recipes.</p>
-                <p className="text-xs text-stone-500 mt-1">
+                <p className="text-xs text-[#a8a29e] uppercase tracking-wide mb-0.5">Also from Homesteading Guide</p>
+                <p className="text-sm font-semibold text-[#222]">Got a micro-harvest? Get custom preserving recipes.</p>
+                <p className="text-xs text-[#6b6559] mt-1">
                   Quick pickle, lacto-ferment, or water-bath can — scaled to fit a single Mason jar.
                 </p>
-                <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 mt-2">
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-[#2D5A27] mt-2">
                   Try the Preserving Calculator
                   <ArrowRight className="w-3 h-3" />
                 </span>

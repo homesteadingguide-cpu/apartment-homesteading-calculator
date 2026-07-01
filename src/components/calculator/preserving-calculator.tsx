@@ -330,7 +330,7 @@ function RecipeCard({
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats — decorative on screen, hidden on print since info is in the header */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 print-hide">
         <MiniStat icon={Scale} label="Harvest" value={recipe.ingredients[0]?.amount ?? '-'} />
         <MiniStat icon={Package} label="Jar Size" value={recipe.jarSize === 'half-pint' ? 'Half-Pint' : 'Pint'} />
@@ -354,6 +354,7 @@ function RecipeCard({
           </TabsTrigger>
         </TabsList>
 
+        {/* Ingredients Tab */}
         <TabsContent value="recipe">
           <Card className="border-[#d6d3c8] shadow-sm mt-3">
             <CardHeader className="pb-3">
@@ -384,6 +385,7 @@ function RecipeCard({
             </CardContent>
           </Card>
 
+          {/* Equipment */}
           <Card className="border-[#d6d3c8] shadow-sm mt-4">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
@@ -404,6 +406,7 @@ function RecipeCard({
           </Card>
         </TabsContent>
 
+        {/* Steps Tab */}
         <TabsContent value="steps">
           <Card className="border-[#d6d3c8] shadow-sm mt-3">
             <CardHeader className="pb-3">
@@ -430,6 +433,7 @@ function RecipeCard({
           </Card>
         </TabsContent>
 
+        {/* Storage & Safety Tab */}
         <TabsContent value="storage">
           <div className="space-y-4 mt-3">
             <Card className="border-[#d6d3c8] shadow-sm">
@@ -644,6 +648,7 @@ export default function PreservingCalculator({
 
   const { savedRecipes, saveRecipe, deleteRecipe, isRecipeSaved } = useRecipeStore();
 
+  // Filter produce by selected method
   const availableProduce = useMemo(() => {
     if (!selectedMethod) return PRODUCE;
     return PRODUCE.filter((p) => {
@@ -654,6 +659,7 @@ export default function PreservingCalculator({
     });
   }, [selectedMethod]);
 
+  // Derive recipe from inputs
   const recipe: RecipeOutput | null = useMemo(() => {
     if (selectedMethod && harvestEntries.length > 0 && harvestEntries.every((e) => e.weightGrams > 0)) {
       return generateRecipe(harvestEntries, selectedMethod);
@@ -717,6 +723,7 @@ export default function PreservingCalculator({
     setHarvestEntries(
       saved.harvestEntries.map((e) => ({ ...e }))
     );
+    // Scroll to top so user sees the restored state
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
@@ -890,7 +897,7 @@ export default function PreservingCalculator({
           )}
         </AnimatePresence>
 
-        {/* Shelf-Life Tracker */}
+        {/* Shelf-Life Tracker - shown after recipe is generated */}
         {recipe && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -905,7 +912,7 @@ export default function PreservingCalculator({
           </motion.div>
         )}
 
-        {/* Cross-sell upsell */}
+        {/* Cross-sell upsell — hidden on print */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

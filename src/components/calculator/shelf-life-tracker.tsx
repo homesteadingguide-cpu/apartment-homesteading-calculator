@@ -174,6 +174,7 @@ function addMonths(date: Date, months: number): Date {
 }
 
 function toLocalDateStr(dateStr: string): string {
+  // Convert YYYY-MM-DD to local date parts (avoid timezone shift)
   const [y, m, d] = dateStr.split('-').map(Number);
   return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 }
@@ -181,8 +182,11 @@ function toLocalDateStr(dateStr: string): string {
 // ---- Component Props ----
 
 interface ShelfLifeTrackerProps {
+  /** Pre-selected method name (from preserving calculator) */
   method?: string;
+  /** Pre-filled item name (e.g. "Jalapeños Quick Pickle") */
   itemName?: string;
+  /** Show as compact inline card vs full card */
   compact?: boolean;
 }
 
@@ -193,6 +197,7 @@ export default function ShelfLifeTracker({
   itemName: initialItemName,
   compact = false,
 }: ShelfLifeTrackerProps) {
+  // Default date to today in YYYY-MM-DD format
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
@@ -210,6 +215,7 @@ export default function ShelfLifeTracker({
 
   const bestByDate = useMemo(() => {
     if (!shelfInfo || !dateProcessed) return null;
+    // Parse as local date (no timezone shift)
     const [y, m, d] = dateProcessed.split('-').map(Number);
     const processed = new Date(y, m - 1, d);
     return addMonths(processed, shelfInfo.shelfLifeMonths);
@@ -233,8 +239,10 @@ export default function ShelfLifeTracker({
 
   const allMethods = Object.keys(METHOD_SHELF_DATA) as TrackerMethod[];
 
+  // ---- Single label template ----
   const labelContent = shelfInfo && bestByDate && (
     <>
+      {/* Header bar */}
       <div style={{
         fontSize: '8px',
         textTransform: 'uppercase',
@@ -251,10 +259,12 @@ export default function ShelfLifeTracker({
         <span style={{ fontSize: '7px', letterSpacing: '0.1em' }}>STORAGE LABEL</span>
       </div>
 
+      {/* Item name — large */}
       <div style={{ fontSize: '15px', fontWeight: 700, color: '#222', marginBottom: '10px', lineHeight: 1.2 }}>
         {itemName || 'Untitled Preserves'}
       </div>
 
+      {/* Key details */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 16px', fontSize: '11px', color: '#444', marginBottom: '10px' }}>
         <div>
           <span style={{ color: '#999', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Method</span>
@@ -274,6 +284,7 @@ export default function ShelfLifeTracker({
         </div>
       </div>
 
+      {/* EXPIRY — hero */}
       <div style={{
         background: '#f2f7f0',
         border: '1.5px solid #2D5A27',
@@ -290,12 +301,14 @@ export default function ShelfLifeTracker({
         </div>
       </div>
 
+      {/* Notes lines */}
       <div style={{ fontSize: '7px', color: '#aaa', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Notes</div>
       <div style={{ borderBottom: '1px solid #d6d3c8', height: '14px', marginBottom: '4px' }}></div>
       <div style={{ borderBottom: '1px solid #d6d3c8', height: '14px', marginBottom: '4px' }}></div>
     </>
   );
 
+  // ---- Full page of labels for print ----
   const printPage = labelContent && (
     <div className="label-print-only" aria-hidden="true" style={{ padding: '12px' }}>
       <div style={{
@@ -324,6 +337,7 @@ export default function ShelfLifeTracker({
 
   return (
     <>
+      {/* Print label content — always rendered, hidden via CSS */}
       {printPage}
 
       <Card
@@ -341,6 +355,7 @@ export default function ShelfLifeTracker({
         )}
         <CardContent className={compact ? 'p-4' : 'pt-0 pb-5 px-5'}>
           <div className="space-y-4">
+            {/* Method selector */}
             <div className="space-y-1.5">
               <Label className="text-xs text-[#6b6559]">Preserving Method</Label>
               <select
@@ -357,6 +372,7 @@ export default function ShelfLifeTracker({
               </select>
             </div>
 
+            {/* Item name (optional) */}
             <div className="space-y-1.5">
               <Label className="text-xs text-[#6b6559]">
                 Label Name <span className="opacity-50">(optional)</span>
@@ -370,6 +386,7 @@ export default function ShelfLifeTracker({
               />
             </div>
 
+            {/* Date processed */}
             <div className="space-y-1.5">
               <Label className="text-xs text-[#6b6559]">Date Processed</Label>
               <input
@@ -380,15 +397,18 @@ export default function ShelfLifeTracker({
               />
             </div>
 
+            {/* Dynamic storage info — appears when method is selected */}
             {shelfInfo && bestByDate && (
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-3"
               >
+                {/* Storage info card with dotted border (retro label style) */}
                 <div
                   className="rounded-2xl border-2 border-dashed border-[#2D5A27]/30 bg-[#f2f7f0]/50 p-4 space-y-3"
                 >
+                  {/* Storage Location */}
                   <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-[#2D5A27] shrink-0" />
                     <div>
@@ -401,6 +421,7 @@ export default function ShelfLifeTracker({
                     </div>
                   </div>
 
+                  {/* Optimal Shelf Life */}
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-[#2D5A27] shrink-0" />
                     <div>
@@ -413,6 +434,7 @@ export default function ShelfLifeTracker({
                     </div>
                   </div>
 
+                  {/* Best By Date — hero output */}
                   <div className="bg-white rounded-xl p-3 border border-[#d6d3c8]/60">
                     <div className="flex items-center justify-between">
                       <div>
@@ -444,6 +466,7 @@ export default function ShelfLifeTracker({
                   </div>
                 </div>
 
+                {/* Label count + Print button */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label className="text-xs text-[#6b6559]">Labels per page</Label>

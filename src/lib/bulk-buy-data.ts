@@ -1,5 +1,5 @@
 // ============================================================
-// Balcony-to-Pantry Bulk-Buy Diversion Matrix — Data & Logic Engine
+// Apartment Homesteading Calculators — Bulk-Buy Diversion Matrix — Data & Logic Engine
 // ============================================================
 
 // --- Types ---
@@ -1219,30 +1219,53 @@ export function generateDiversionPlan(
 ): DiversionPlan {
   const totalGrams = Math.round(totalLbs * 453.592);
 
-  // Get eligible methods sorted by priority (highest first)
+  // Safety: if no diversions defined, return empty plan
+  if (!item.diversions?.methods?.length) {
+    return { steps: [], totalWeightLbs: totalLbs, totalWeightGrams: totalGrams };
+  }
+
+  // Get eligible methods sorted by priority (highest first),
+  // filtering out any with methodIds that don't exist in PROCESSING_METHODS
   const eligible = item.diversions.methods
-    .filter((d) => totalLbs >= d.minWeightLbs)
+    .filter((d) => {
+      if (totalLbs < d.minWeightLbs) return false;
+      // Validate methodId exists before including
+      if (!PROCESSING_METHODS.some((m) => m.id === d.methodId)) {
+        console.warn(`[BulkBuy] Skipping unknown methodId "${d.methodId}" for item "${item.id}"`);
+        return false;
+      }
+      return true;
+    })
     .sort((a, b) => b.priority - a.priority);
+
+  // Safety: if all methods were filtered out, return empty plan
+  if (eligible.length === 0) {
+    return { steps: [], totalWeightLbs: totalLbs, totalWeightGrams: totalGrams };
+  }
 
   // We want 2-4 methods. For very small amounts (< 2 lbs), use fewer.
   const targetCount = totalLbs < 2 ? 2 : totalLbs < 5 ? 3 : Math.min(eligible.length, 4);
   const selectedMethods = eligible.slice(0, targetCount);
 
   // Allocate weight proportions based on priority
-  // Higher priority gets a bigger share
   const totalPriority = selectedMethods.reduce((sum, m) => sum + m.priority, 0);
   let allocatedLbs = 0;
 
-  const steps: DiversionStep[] = selectedMethods.map((dm, i) => {
+  // Build steps — no nulls possible since we pre-validated methodIds
+  const steps: DiversionStep[] = [];
+
+  for (let i = 0; i < selectedMethods.length; i++) {
+    const dm = selectedMethods[i];
     const method = getMethod(dm.methodId);
-    if (!method) {
-      return null;
-    }
+    // Double-check guard (should never trigger due to pre-filter, but safe)
+    if (!method) continue;
 
     let weightLbs: number;
     if (i === selectedMethods.length - 1) {
       // Last method gets the remainder
       weightLbs = Math.round((totalLbs - allocatedLbs) * 100) / 100;
+      // Ensure non-negative
+      weightLbs = Math.max(0.5, weightLbs);
     } else {
       // Proportional allocation based on priority
       const share = dm.priority / totalPriority;
@@ -1258,7 +1281,7 @@ export function generateDiversionPlan(
     const cubicFt = Math.round(weightLbs * dm.cubicFtPerLb * 1000) / 1000;
     const processingTime = dm.processingTimePerLb + (dm.passiveTimePerLb ? ` ${dm.passiveTimePerLb}` : '');
 
-    return {
+    steps.push({
       method,
       weightLbs,
       weightGrams,
@@ -1268,22 +1291,22 @@ export function generateDiversionPlan(
       instructions: dm.instructions,
       shelfLife: dm.shelfLife,
       cubicFt,
-    };
-  }).filter(Boolean) as DiversionStep[];
+    });
+  }
 
   // Fix rounding: adjust last step so weights sum exactly to totalLbs
   if (steps.length > 0) {
     const currentSum = steps.reduce((s, step) => s + step.weightLbs, 0);
     const diff = Math.round((totalLbs - currentSum) * 100) / 100;
     const last = steps[steps.length - 1];
-    last.weightLbs = Math.round((last.weightLbs + diff) * 100) / 100;
+    last.weightLbs = Math.max(0.5, Math.round((last.weightLbs + diff) * 100) / 100);
     last.weightGrams = Math.round(last.weightLbs * 453.592);
   }
 
   return {
     steps,
     totalWeightLbs: totalLbs,
-    totalWeightGrams: totalGrams, Math.round(totalLbs * 453.592),
+    totalWeightGrams: totalGrams,
   };
 }
 
