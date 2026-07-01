@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useMemo, useCallback } from 'react';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Leaf,
@@ -912,15 +911,17 @@ export default function PreservingCalculator({
           </motion.div>
         )}
 
-        {/* Cross-sell upsell — hidden on print */}
+        {/* Cross-sell upsell — teaser links to purchase page, not direct access */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
           className="mt-8 mb-4 print-hide"
         >
-          <Link
-            href="/bulk-buy"
+          <a
+            href="https://homesteadingguide.com/bulk-buy-calculator"
+            target="_blank"
+            rel="noopener noreferrer"
             className="block rounded-xl border border-[#d6d3c8] bg-gradient-to-r from-[#f2f7f0] to-[#F4F1EA] p-4 sm:p-5 no-underline hover:shadow-md hover:border-[#2D5A27]/30 transition-all"
           >
             <div className="flex items-start gap-3">
@@ -934,12 +935,12 @@ export default function PreservingCalculator({
                   20 lbs of carrots? 50 lbs of potatoes? Learn exactly how to process and store it all in your apartment.
                 </p>
                 <span className="inline-flex items-center gap-1 text-xs font-medium text-[#2D5A27] mt-2">
-                  Try the Bulk-Buy Diversion Matrix
+                  Get the Bulk-Buy Diversion Matrix
                   <ArrowRight className="w-3 h-3" />
                 </span>
               </div>
             </div>
-          </Link>
+          </a>
         </motion.div>
       </main>
 

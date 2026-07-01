@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useMemo, useCallback } from 'react';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Package,
@@ -50,6 +49,26 @@ import {
   downloadDiversionText,
 } from '@/hooks/use-recipe-store';
 import ShelfLifeTracker from '@/components/calculator/shelf-life-tracker';
+
+// Map bulk-buy ProcessingMethod names to ShelfLifeTracker's TrackerMethod names
+const METHOD_NAME_MAP: Record<string, string> = {
+  'Lacto-Ferment': 'Lacto-Ferment',
+  'Dehydrate': 'Dehydrate',
+  'Flash-Freeze': 'Flash-Freeze',
+  'Quick Pickle': 'Quick Pickle',
+  'Roast & Freeze': 'Roast & Freeze',
+  'Make Sauce': 'Make Sauce',
+  'Make Powder': 'Make Powder',
+  'Blanch & Freeze': 'Blanch & Freeze',
+  'Make Fruit Butter': 'Make Butter',
+  'Make Jam': 'Make Jam',
+  'Make Chips': 'Make Chips',
+  'Caramelize & Freeze': 'Caramelize & Freeze',
+  'Make Broth Base': 'Make Broth',
+  'Make Pesto / Puree': 'Make Pesto',
+  'Store Cool & Dark': 'Store Cool & Dark',
+  'Confit': 'Confit',
+};
 
 // ---- Helpers ----
 
@@ -797,19 +816,24 @@ export default function BulkBuyCalculator({
                 transition={{ delay: 0.4 }}
                 className='mb-6 print-hide'
               >
-                <ShelfLifeTracker />
+                <ShelfLifeTracker
+                  method={plan?.steps?.[0] ? METHOD_NAME_MAP[plan.steps[0].method.name] || plan.steps[0].method.name : undefined}
+                  itemName={selectedItem ? `${selectedItem.name} — ${plan?.steps?.[0]?.method.name || 'Stored'}` : undefined}
+                />
               </motion.div>
             )}
 
-        {/* Cross-sell upsell — hidden on print */}
+        {/* Cross-sell upsell — teaser links to purchase page, not direct access */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
           className="mt-8 mb-4 print-hide"
         >
-          <Link
-            href="/preserving"
+          <a
+            href="https://homesteadingguide.com/preserving-calculator"
+            target="_blank"
+            rel="noopener noreferrer"
             className="block rounded-xl border border-[#d6d3c8] bg-gradient-to-r from-emerald-50 to-[#F4F1EA] p-4 sm:p-5 no-underline hover:shadow-md hover:border-emerald-200 transition-all"
           >
             <div className="flex items-start gap-3">
@@ -823,12 +847,12 @@ export default function BulkBuyCalculator({
                   Quick pickle, lacto-ferment, or water-bath can — scaled to fit a single Mason jar.
                 </p>
                 <span className="inline-flex items-center gap-1 text-xs font-medium text-[#2D5A27] mt-2">
-                  Try the Preserving Calculator
+                  Get the Preserving Calculator
                   <ArrowRight className="w-3 h-3" />
                 </span>
               </div>
             </div>
-          </Link>
+          </a>
         </motion.div>
       </main>
     </div>
