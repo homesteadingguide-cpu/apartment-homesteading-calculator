@@ -274,7 +274,7 @@ export const BULK_ITEMS: BulkItem[] = [
     tips: [
       'Buy 10-50 lb bags from warehouse clubs — yellow onions are cheapest.',
       'Store whole onions in a mesh bag in a cool, dark, ventilated space.',
-      'Never store onions next to potatoes — they make each other spoil faster.',
+      'Keep onions and potatoes in separate spots: onions want dry air, potatoes want humid air.',
       'Red onions are best for quick pickling; yellow are most versatile.',
     ],
     diversions: {
@@ -334,7 +334,7 @@ export const BULK_ITEMS: BulkItem[] = [
     tips: [
       'Buy garlic in braids or 3-lb mesh bags for best pricing.',
       'Softneck garlic stores longer; hardneck has more flavor depth.',
-      'Never refrigerate whole garlic — it sprouts faster in cold.',
+      'Keep whole garlic dry with good airflow. It sprouts fastest at 41 to 65°F, and damp spots like a crisper drawer invite mold and rooting.',
       'A single head yields about 8-12 cloves, roughly 0.1 lbs.',
     ],
     diversions: {
@@ -347,8 +347,8 @@ export const BULK_ITEMS: BulkItem[] = [
           cubicFtPerLb: 0.025,
           processingTimePerLb: '~10 min prep + 45 min cook',
           passiveTimePerLb: '',
-          instructions: 'Separate cloves (no need to peel). Submerge in olive oil in a small saucepan. Cook on the lowest heat for 40-45 min until cloves are soft and golden. Transfer cloves and oil to a clean jar, refrigerate.',
-          shelfLife: '2-3 weeks in fridge (use the oil too!)',
+          instructions: 'Separate cloves (no need to peel). Submerge in olive oil in a small saucepan. Cook on the lowest heat for 40-45 min until cloves are soft and golden. Transfer cloves and oil to a clean jar and refrigerate. Use within 4 days, or freeze in portions for longer. Never keep garlic in oil at room temperature.',
+          shelfLife: '4 days in fridge, longer if frozen (use the oil too!)',
         },
         {
           methodId: 'make-powder',
@@ -395,7 +395,7 @@ export const BULK_ITEMS: BulkItem[] = [
       'Buy 20-50 lb bags from restaurant supply stores for huge savings.',
       'Store in a paper bag in a cool, dark place — never the fridge.',
       'Russets are best for freezing; waxy types hold up better for salads.',
-      'If they sprout, just pluck the sprouts — they\'re still fine to eat.',
+      'Throw away potatoes that are shriveled or heavily sprouted, and peel off small green patches. Green means light got in, so keep them dark.',
     ],
     diversions: {
       methods: [
@@ -408,7 +408,7 @@ export const BULK_ITEMS: BulkItem[] = [
           processingTimePerLb: '~15 min active',
           passiveTimePerLb: '',
           instructions: 'Peel and cut into 1" cubes. Boil until just tender (8-10 min). Drain, spread on a parchment-lined sheet pan, and freeze until solid. Transfer to freezer bags, press flat, and store.',
-          shelfLife: '10-12 months in freezer',
+          shelfLife: '2-4 weeks in freezer (cooked potatoes lose flavor fast)',
         },
         {
           methodId: 'make-chips',
@@ -441,7 +441,7 @@ export const BULK_ITEMS: BulkItem[] = [
           processingTimePerLb: '~10 min prep + 35 min roasting',
           passiveTimePerLb: '',
           instructions: 'Cube into 1" pieces, toss with oil, salt, and rosemary. Roast at 400°F for 30-35 min until caramelized and tender. Cool completely, portion into freezer bags, and freeze.',
-          shelfLife: '6 months in freezer',
+          shelfLife: '2-4 weeks in freezer (cooked potatoes lose flavor fast)',
         },
       ],
     },
@@ -453,9 +453,9 @@ export const BULK_ITEMS: BulkItem[] = [
     category: 'root veg',
     tips: [
       'Farmers market bulk deals in fall can be $0.75/lb or less.',
-      'Cure them at room temp for 1-2 weeks before processing for best flavor.',
+      'Home-grown sweet potatoes need curing first: 4 to 7 days at 80 to 85°F in high humidity.',
       'They\'re incredibly versatile — the same batch can become soup, fries, and puree.',
-      'Store unprocessed sweet potatoes in a cool, dark, dry spot.',
+      'Store unprocessed sweet potatoes at 55 to 60°F in the dark with good airflow. Never in the fridge: below 50 to 55°F they get hard cores.',
     ],
     diversions: {
       methods: [
