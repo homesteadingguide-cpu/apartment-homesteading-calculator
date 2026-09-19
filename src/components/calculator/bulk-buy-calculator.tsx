@@ -819,6 +819,7 @@ export default function BulkBuyCalculator({
                 <ShelfLifeTracker
                   method={plan?.steps?.[0] ? METHOD_NAME_MAP[plan.steps[0].method.name] || plan.steps[0].method.name : undefined}
                   itemName={selectedItem ? `${selectedItem.name} — ${plan?.steps?.[0]?.method.name || 'Stored'}` : undefined}
+                  produceId={selectedItem?.id}
                 />
               </motion.div>
             )}

@@ -38,6 +38,8 @@ export type TrackerMethod =
 interface ShelfLifeInfo {
   storageLocation: string;
   shelfLifeMonths: number;
+  /** When set, best-by is calculated in days and shelfLifeMonths is ignored. */
+  shelfLifeDays?: number;
   shelfLifeLabel: string;
   isShelfStable: boolean;
 }
@@ -143,8 +145,29 @@ const METHOD_SHELF_DATA: Record<TrackerMethod, ShelfLifeInfo> = {
   },
   'Confit': {
     storageLocation: 'Fridge',
-    shelfLifeMonths: 3,
-    shelfLifeLabel: '3 Months (Refrigerated)',
+    shelfLifeMonths: 0,
+    shelfLifeDays: 4,
+    shelfLifeLabel: '4 Days (Refrigerated, or freeze)',
+    isShelfStable: false,
+  },
+};
+
+// Per-crop overrides where a crop differs from the method default.
+// Key: `${produceId}:${method}`.
+const CROP_SHELF_OVERRIDES: Record<string, ShelfLifeInfo> = {
+  // Cooked potatoes lose flavor fast in the freezer (Penn State Extension: 2 to 4 weeks).
+  'potatoes:Flash-Freeze': {
+    storageLocation: 'Freezer',
+    shelfLifeMonths: 0,
+    shelfLifeDays: 14,
+    shelfLifeLabel: '2-4 Weeks (Frozen)',
+    isShelfStable: false,
+  },
+  'potatoes:Roast & Freeze': {
+    storageLocation: 'Freezer',
+    shelfLifeMonths: 0,
+    shelfLifeDays: 14,
+    shelfLifeLabel: '2-4 Weeks (Frozen)',
     isShelfStable: false,
   },
 };
@@ -173,6 +196,12 @@ function addMonths(date: Date, months: number): Date {
   return result;
 }
 
+function addDays(date: Date, days: number): Date {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
 function toLocalDateStr(dateStr: string): string {
   // Convert YYYY-MM-DD to local date parts (avoid timezone shift)
   const [y, m, d] = dateStr.split('-').map(Number);
@@ -186,6 +215,8 @@ interface ShelfLifeTrackerProps {
   method?: string;
   /** Pre-filled item name (e.g. "Jalapeños Quick Pickle") */
   itemName?: string;
+  /** Produce id (e.g. "potatoes"), used for per-crop shelf-life overrides */
+  produceId?: string;
   /** Show as compact inline card vs full card */
   compact?: boolean;
 }
@@ -195,6 +226,7 @@ interface ShelfLifeTrackerProps {
 export default function ShelfLifeTracker({
   method: initialMethod,
   itemName: initialItemName,
+  produceId,
   compact = false,
 }: ShelfLifeTrackerProps) {
   // Default date to today in YYYY-MM-DD format
@@ -208,17 +240,22 @@ export default function ShelfLifeTracker({
   const [itemName, setItemName] = useState(initialItemName || '');
   const [labelCount, setLabelCount] = useState(10);
 
-  const shelfInfo = useMemo(
-    () => (selectedMethod ? METHOD_SHELF_DATA[selectedMethod] : null),
-    [selectedMethod]
-  );
+  const shelfInfo = useMemo(() => {
+    if (!selectedMethod) return null;
+    return (
+      (produceId && CROP_SHELF_OVERRIDES[`${produceId}:${selectedMethod}`]) ||
+      METHOD_SHELF_DATA[selectedMethod]
+    );
+  }, [selectedMethod, produceId]);
 
   const bestByDate = useMemo(() => {
     if (!shelfInfo || !dateProcessed) return null;
     // Parse as local date (no timezone shift)
     const [y, m, d] = dateProcessed.split('-').map(Number);
     const processed = new Date(y, m - 1, d);
-    return addMonths(processed, shelfInfo.shelfLifeMonths);
+    return shelfInfo.shelfLifeDays !== undefined
+      ? addDays(processed, shelfInfo.shelfLifeDays)
+      : addMonths(processed, shelfInfo.shelfLifeMonths);
   }, [shelfInfo, dateProcessed]);
 
   const daysRemaining = useMemo(() => {
