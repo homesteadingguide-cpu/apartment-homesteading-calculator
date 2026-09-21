@@ -102,10 +102,11 @@ const METHOD_SHELF_DATA: Record<TrackerMethod, ShelfLifeInfo> = {
     isShelfStable: false,
   },
   'Make Jam': {
-    storageLocation: 'Cool, Dark Pantry',
-    shelfLifeMonths: 12,
-    shelfLifeLabel: '12 Months (Shelf-Stable)',
-    isShelfStable: true,
+    storageLocation: 'Fridge or Freezer',
+    shelfLifeMonths: 1,
+    shelfLifeDays: 21,
+    shelfLifeLabel: '3 Weeks (Fridge, or up to 1 Year Frozen)',
+    isShelfStable: false,
   },
   'Make Fruit Butter': {
     storageLocation: 'Fridge',

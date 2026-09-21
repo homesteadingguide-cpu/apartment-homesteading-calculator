@@ -153,8 +153,21 @@ export const PRODUCE: ProduceItem[] = [
     waterBath: true,
     defaultVinegar: "white",
     waterBathAcidified: false,
-    waterBathProcessingMinutes: 10,
+    waterBathProcessingMinutes: 5,
     flavorPairings: ["lemon", "vanilla", "balsamic", "black pepper"],
+    defaultJarSize: "half-pint",
+  },
+  {
+    id: "blackberry",
+    name: "Blackberries",
+    emoji: "🫐",
+    quickPickle: false,
+    ferment: false,
+    waterBath: true,
+    defaultVinegar: "white",
+    waterBathAcidified: false,
+    waterBathProcessingMinutes: 5,
+    flavorPairings: ["lemon", "vanilla", "black pepper", "mint"],
     defaultJarSize: "half-pint",
   },
   {
@@ -166,7 +179,7 @@ export const PRODUCE: ProduceItem[] = [
     waterBath: true,
     defaultVinegar: "white",
     waterBathAcidified: true,
-    waterBathProcessingMinutes: 25,
+    waterBathProcessingMinutes: 5,
     flavorPairings: ["cinnamon", "ginger", "vanilla", "cloves", "bourbon"],
     defaultJarSize: "pint",
   },
@@ -494,53 +507,103 @@ function generateWaterBathRecipe(entries: HarvestEntry[]): RecipeOutput {
   const waterMl = brineMl / 2;
   const saltGrams = roundTo(brineMl * 0.025, 1);
 
-  // For fruit preserves/jams
-  const isFruit = ["strawberry", "peach"].includes(entries[0].produceId);
+  // For fruit jams: tested proportions for jam made without added pectin
+  // (National Center for Home Food Preservation, adapted from the USDA Complete Guide to Home Canning).
+  // Berries: equal volumes of crushed fruit and sugar, no lemon juice.
+  // Peaches: 4-5 cups sugar and 2 Tbsp lemon juice per 5 1/2 to 6 cups crushed fruit.
+  const FRUIT_IDS = ["strawberry", "peach", "blackberry"];
+  const isFruit = FRUIT_IDS.includes(entries[0].produceId);
 
   let ingredients: RecipeIngredient[];
   let steps: string[];
   let safetyNote: string;
 
   if (isFruit) {
-    // Fruit preserve/jam approach
-    const sugarGrams = roundTo(totalWeight * 0.5, 0); // 50% sugar by weight
-    const lemonMl = roundTo(totalWeight * 0.02, 0); // ~2% lemon juice
+    const isPeach = entries[0].produceId === "peach";
+    const CRUSHED_CUP_G = 250; // rough weight of 1 cup of crushed fruit
+    const SUGAR_CUP_G = 200; // 1 cup of granulated sugar
+    const fruitCups = roundTo(totalWeight / CRUSHED_CUP_G, 1);
+    const sugarCups = roundTo(fruitCups * (isPeach ? 0.8 : 1), 1);
+    const sugarGrams = roundTo(sugarCups * SUGAR_CUP_G, 0);
+    const lemonTsp = isPeach ? roundTo(fruitCups * 1, 1) : 0;
+    const fruitJar: "half-pint" | "pint" = totalWeight > 220 ? "pint" : "half-pint";
+    const fruitJarMl = getJarMl(fruitJar);
+    // Tested recipes yield roughly 0.8 ml of jam per gram of fruit (3-4 half-pints from ~4 cups of crushed fruit).
+    const jarCount = Math.max(1, Math.ceil((totalWeight * 0.8) / (fruitJarMl * 0.95)));
+    const jarWord = `${jarCount} ${fruitJar} Mason jar${jarCount > 1 ? "s" : ""}`;
+    const prep = isPeach
+      ? "Wash the peaches, then peel, pit and crush them."
+      : entries[0].produceId === "blackberry"
+        ? "Wash the berries and crush them. If you would rather have seedless jam, heat the crushed berries until soft and press them through a sieve or food mill first."
+        : "Wash the berries, take off the caps, and crush them.";
 
     ingredients = [
       {
         name: "Your Harvest",
         amount: formatGrams(totalWeight),
         amountGrams: totalWeight,
-        note: produceNames,
+        note: `${produceNames}, crushed. Measure the crushed fruit in cups (about ${fruitCups} cups here).`,
       },
       {
         name: "Granulated Sugar",
-        amount: formatGrams(sugarGrams),
+        amount: `${sugarCups} cups (about ${formatGrams(sugarGrams)})`,
         amountGrams: sugarGrams,
-        note: `50% of fruit weight — this ratio ensures proper gel and safe preservation`,
+        note: isPeach
+          ? "Tested proportion: 4 to 5 cups of sugar for every 5½ to 6 cups of crushed peaches. Do not reduce it."
+          : "Tested proportion: the same number of cups of sugar as crushed fruit. Do not reduce it.",
       },
-      {
-        name: "Fresh Lemon Juice",
-        amount: formatMl(lemonMl),
-        amountMl: lemonMl,
-        note: "Critical for safe acidity levels",
-      },
+      ...(isPeach
+        ? [
+            {
+              name: "Bottled Lemon Juice",
+              amount: `${lemonTsp} tsp`,
+              note: "Tested proportion: 2 tablespoons for every 5½ to 6 cups of crushed peaches.",
+            } as RecipeIngredient,
+          ]
+        : []),
     ];
 
     steps = [
-      `Sterilize your ${jarSize} Mason jar and lid: submerge in boiling water for 10 minutes, then keep hot until ready to fill. Also prepare a small pot of boiling water for the canner.`,
-      `Wash and prep your ${produceNames.toLowerCase()}. For strawberries, hull and halve them. For peaches, peel, pit, and slice into 1/2 inch wedges. Mash about half the fruit for a chunky jam texture.`,
-      `Place the prepared fruit in a wide, heavy-bottomed saucepan. Add ${formatGrams(sugarGrams)} of sugar and ${formatMl(lemonMl)} of lemon juice. Stir well.`,
-      `Bring to a rolling boil over medium-high heat, stirring frequently to prevent scorching. Continue boiling for 10-15 minutes, stirring often, until the mixture thickens. Test for gel: put a small spoonful on a cold plate — it should wrinkle when you push it with your finger.`,
-      `Ladle the hot jam into the sterilized jar, leaving 1/4 inch (6mm) of headspace. Run a non-metallic spatula around the inside to release air bubbles. Wipe the rim clean with a damp cloth.`,
-      `Place the sterilized lid on the jar and screw on the band until fingertip-tight (do not over-tighten).`,
-      `Place the jar on a canning rack in your boiling water canner. Ensure the jar is covered by at least 1-2 inches of water. Bring back to a full rolling boil and process for ${processingMinutes} minutes, adjusting for altitude if needed (+1 minute per 1000 ft above 1000 ft).`,
-      `Turn off the heat, remove the canner lid, and wait 5 minutes. Using jar lifter, remove the jar without tilting and place on a towel on your counter. Do NOT retighten the lid. Let cool undisturbed for 12-24 hours.`,
-      `Check the seal: press the center of the lid — it should be firm and not pop. If it pops, refrigerate immediately and use within 2 weeks. Label with the date and store.`,
+      `Sterilize your ${jarWord} and lids: submerge in boiling water for 10 minutes, then keep hot until ready to fill. Put 2 small plates in the freezer for the set test.`,
+      `${prep} Measure the crushed fruit in cups.`,
+      `Put the crushed fruit in a wide, heavy-bottomed saucepan. Add the sugar${isPeach ? " and lemon juice" : ""}, using the amounts above, and stir well. If your measured cups differ from the estimate above, go by your cups and keep the same sugar ratio.`,
+      `Bring slowly to a boil, stirring until the sugar dissolves. Then boil hard, stirring rapidly and constantly, until the jam reaches 220°F at sea level (at altitude, use 218°F at 1,000 ft, 216°F at 2,000 ft, 214°F at 3,000 ft, 212°F at 4,000 ft, 211°F at 5,000 ft, 209°F at 6,000 ft), or until a spoonful on a frozen plate wrinkles when you push it. Hot jam looks runnier than it will be once cool, so stop when it passes the test.`,
+      `Take the pot off the heat and skim off the foam. Ladle the hot jam into the hot jars, leaving 1/4 inch (6 mm) of headspace. Wipe the rims clean with a damp cloth.`,
+      `Put the lids on and screw the bands on until fingertip-tight.`,
+      `Process in a boiling water canner, with the jars covered by 1 to 2 inches of water: 5 minutes at 0 to 1,000 ft, 10 minutes at 1,001 to 6,000 ft, 15 minutes above 6,000 ft. Start the timer when the water is at a full rolling boil.`,
+      `Turn off the heat, remove the canner lid, and wait 5 minutes. Lift the jars out without tilting them and set them on a towel. Do NOT retighten the lid. Let it cool undisturbed for 12 to 24 hours.`,
+      `Check each seal: press the center of the lid. It should be firm and not flex. If it flexes, keep that jar in the fridge and use it within 3 weeks. Label with the date.`,
+      `These proportions are tested for about 4 to 6 cups of crushed fruit per batch. If you have more fruit than that, cook it in separate batches rather than one big pot.`,
     ];
 
     safetyNote =
-      "Water-bath canning is ONLY safe for high-acid foods (pH below 4.6). This recipe includes lemon juice to ensure safe acidity. Do NOT alter the lemon juice amount. If you live above 1,000 ft elevation, you MUST add 1 minute of processing time per 1,000 ft. Do NOT use this recipe for low-acid vegetables without added vinegar/acidification.";
+      "These are the tested proportions and processing times for jam made without added pectin, from the National Center for Home Food Preservation. The sugar is part of the preservation, so do not reduce it, and do not shorten the processing time. Cook one type of fruit per batch. If you would rather skip the canner, the same jam keeps about 3 weeks in the fridge or up to a year in the freezer.";
+
+    return {
+      title: `Water-Bath Canned ${produceNames}`,
+      method: "water-bath",
+      jarSize: fruitJar,
+      jarSizeMl: fruitJarMl,
+      servings: fruitJar === "half-pint" ? 4 : 8,
+      ingredients,
+      equipment: [
+        `${jarWord} with 2-piece lids`,
+        "Boiling water canner (or a large, deep pot with a lid and rack)",
+        "Jar lifter or tongs",
+        "Canning funnel",
+        "Non-metallic spatula or chopstick",
+        "Kitchen scale and measuring cups",
+        "Candy thermometer (optional) and 2 small plates",
+        "Cutting board & knife",
+      ],
+      steps,
+      storage:
+        "Store sealed jars in a cool, dark, dry place (50-70°F / 10-21°C). Once opened, refrigerate and use within 3 weeks.",
+      shelfLife:
+        "For best quality, use within 1 year. A jar with an intact seal and no signs of mold or yeast is safe to eat.",
+      safetyNote,
+      totalWeightGrams: totalWeight,
+    };
   } else {
     // Pickled vegetable via water-bath canning
     const vinegarType =
