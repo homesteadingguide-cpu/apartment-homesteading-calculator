@@ -171,6 +171,19 @@ export const PRODUCE: ProduceItem[] = [
     defaultJarSize: "half-pint",
   },
   {
+    id: "raspberry",
+    name: "Raspberries",
+    emoji: "🫐",
+    quickPickle: false,
+    ferment: false,
+    waterBath: true,
+    defaultVinegar: "white",
+    waterBathAcidified: false,
+    waterBathProcessingMinutes: 5,
+    flavorPairings: ["lemon", "vanilla", "mint", "rose"],
+    defaultJarSize: "half-pint",
+  },
+  {
     id: "peach",
     name: "Peaches",
     emoji: "🍑",
@@ -511,7 +524,7 @@ function generateWaterBathRecipe(entries: HarvestEntry[]): RecipeOutput {
   // (National Center for Home Food Preservation, adapted from the USDA Complete Guide to Home Canning).
   // Berries: equal volumes of crushed fruit and sugar, no lemon juice.
   // Peaches: 4-5 cups sugar and 2 Tbsp lemon juice per 5 1/2 to 6 cups crushed fruit.
-  const FRUIT_IDS = ["strawberry", "peach", "blackberry"];
+  const FRUIT_IDS = ["strawberry", "peach", "blackberry", "raspberry"];
   const isFruit = FRUIT_IDS.includes(entries[0].produceId);
 
   let ingredients: RecipeIngredient[];
@@ -533,7 +546,7 @@ function generateWaterBathRecipe(entries: HarvestEntry[]): RecipeOutput {
     const jarWord = `${jarCount} ${fruitJar} Mason jar${jarCount > 1 ? "s" : ""}`;
     const prep = isPeach
       ? "Wash the peaches, then peel, pit and crush them."
-      : entries[0].produceId === "blackberry"
+      : entries[0].produceId === "blackberry" || entries[0].produceId === "raspberry"
         ? "Wash the berries and crush them. If you would rather have seedless jam, heat the crushed berries until soft and press them through a sieve or food mill first."
         : "Wash the berries, take off the caps, and crush them.";
 
