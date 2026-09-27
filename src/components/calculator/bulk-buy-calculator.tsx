@@ -843,7 +843,7 @@ export default function BulkBuyCalculator({
                 <p className="text-xs text-[#a8a29e] uppercase tracking-wide mb-0.5">Also from Homesteading Guide</p>
                 <p className="text-sm font-semibold text-[#222]">Got a micro-harvest? Get custom preserving recipes.</p>
                 <p className="text-xs text-[#6b6559] mt-1">
-                  Quick pickle, lacto-ferment, or water-bath can — scaled to fit a single Mason jar.
+                  Quick pickle, lacto-ferment, or water-bath can — scaled to your harvest, from a single Mason jar up.
                 </p>
                 <span className="inline-flex items-center gap-1 text-xs font-medium text-[#2D5A27] mt-2">
                   Try the Preserving Calculator

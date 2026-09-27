@@ -799,8 +799,8 @@ export default function PreservingCalculator({
             ) : (
               <span className="italic text-[#a8a29e]">your micro-harvest</span>
             )}
-            . Enter it below and get a custom, safe, small-batch recipe scaled to fit a single Mason
-            jar.
+            . Enter it below and get a custom, safe, small-batch recipe scaled to your harvest, from a
+            single Mason jar up.
           </p>
         </motion.div>
 

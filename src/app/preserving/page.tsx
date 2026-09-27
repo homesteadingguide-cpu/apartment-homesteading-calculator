@@ -5,7 +5,7 @@ import PreservingCalculator from '@/components/calculator/preserving-calculator'
 export const metadata: Metadata = {
   title: 'Preserving Calculator | Balcony-to-Pantry',
   description:
-    'Turn your apartment micro-harvest into custom, safe, small-batch preserving recipes scaled to fit a single Mason jar. Quick pickle, lacto-ferment, or water-bath can — no 10-pound recipes required.',
+    'Turn your apartment micro-harvest into custom, safe, small-batch preserving recipes scaled to your harvest, from a single Mason jar up. Quick pickle, lacto-ferment, or water-bath can — no 10-pound recipes required.',
 };
 
 // Decode share link payload server-side
