@@ -247,6 +247,15 @@ function getJarMl(size: "half-pint" | "pint"): number {
   return size === "half-pint" ? 237 : 473;
 }
 
+// A packed jar holds roughly 0.7 g of prepared produce per ml of jar volume (about 330 g per pint).
+function jarsNeeded(totalWeight: number, jarMl: number): number {
+  return Math.max(1, Math.ceil(totalWeight / (jarMl * 0.7)));
+}
+
+function jarLabel(count: number, size: string): string {
+  return count > 1 ? `${count} ${size} Mason jars` : `1 ${size} Mason jar`;
+}
+
 function formatGrams(g: number): string {
   if (g >= 1000) return `${roundTo(g / 1000, 1)} kg`;
   return `${roundTo(g, 0)} g`;
@@ -283,10 +292,11 @@ function generateQuickPickleRecipe(entries: HarvestEntry[]): RecipeOutput {
   const primaryProduce = PRODUCE.find((p) => p.id === entries[0].produceId);
   const jarSize = totalWeight > 200 ? "pint" : (primaryProduce?.defaultJarSize ?? "half-pint");
   const jarMl = getJarMl(jarSize);
+  const jarCount = jarsNeeded(totalWeight, jarMl);
 
   // Quick Pickle Logic: equal parts water + vinegar, 2% salt by total liquid weight
   // Estimate: produce takes ~60% of jar volume, brine fills remaining ~40%
-  const brineMl = jarMl * 0.4;
+  const brineMl = jarMl * 0.4 * jarCount;
   const waterMl = brineMl / 2;
   const vinegarMl = brineMl / 2;
   const saltGrams = roundTo(brineMl * 1.0 * 0.02, 1); // 2% of brine (water density ~1g/ml)
@@ -345,10 +355,10 @@ function generateQuickPickleRecipe(entries: HarvestEntry[]): RecipeOutput {
   ];
 
   const steps = [
-    `Prepare your ${jarSize} Mason jar by washing it thoroughly with hot soapy water. You do NOT need to sterilize for refrigerator pickles.`,
-    `Wash and prep your ${produceNames.toLowerCase()}: slice jalapeños into rounds, cut carrots into sticks, halve cherry tomatoes, or slice onions into thin rings. Pack them tightly into the jar, leaving about 1 inch (2.5 cm) of headspace at the top.`,
+    `Prepare ${jarLabel(jarCount, jarSize)} by washing ${jarCount > 1 ? "them" : "it"} thoroughly with hot soapy water. You do NOT need to sterilize for refrigerator pickles.`,
+    `Wash and prep your ${produceNames.toLowerCase()}: slice jalapeños into rounds, cut carrots into sticks, halve cherry tomatoes, or slice onions into thin rings. Pack them tightly into the jar${jarCount > 1 ? "s" : ""}, leaving about 1 inch (2.5 cm) of headspace at the top.`,
     `In a small saucepan, combine the ${formatMl(vinegarMl)} of vinegar, ${formatMl(waterMl)} of water, ${formatGrams(saltGrams)} of salt, and sugar if using. Bring to a gentle simmer over medium heat, stirring until the salt and sugar dissolve completely (about 2-3 minutes). Do NOT boil.`,
-    `Carefully pour the hot brine over the packed produce in the jar. Use a butter knife or chopstick to gently press down and release any trapped air bubbles. Ensure the produce is fully submerged.`,
+    `Carefully pour the hot brine over the packed produce, dividing it evenly between the jars. Use a butter knife or chopstick to gently press down and release any trapped air bubbles. Ensure the produce is fully submerged.`,
     `Wipe the rim of the jar with a clean damp cloth. Secure the lid tightly. Let the jar cool to room temperature on the counter (about 1-2 hours).`,
     `Once cooled, place the jar in the refrigerator. Your pickles will be ready to eat in as little as 24 hours, but they reach peak flavor at 3-5 days.`,
   ];
@@ -358,10 +368,10 @@ function generateQuickPickleRecipe(entries: HarvestEntry[]): RecipeOutput {
     method: "quick-pickle",
     jarSize,
     jarSizeMl: jarMl,
-    servings: jarSize === "half-pint" ? 4 : 8,
+    servings: (jarSize === "half-pint" ? 4 : 8) * jarCount,
     ingredients,
     equipment: [
-      `1 ${jarSize} Mason jar with lid`,
+      `${jarLabel(jarCount, jarSize)} with ${jarCount > 1 ? "lids" : "lid"}`,
       "Small saucepan",
       "Cutting board & knife",
       "Measuring cups/spoons",
@@ -421,7 +431,8 @@ function generateFermentRecipe(entries: HarvestEntry[]): RecipeOutput {
   const saltGrams = roundTo(totalWeight * 0.025, 1);
   // Water to submerge: estimate water needed = jar volume - produce volume - headspace
   // Produce is ~60% of jar, headspace ~15%, so brine ~25% of jar
-  const waterMl = jarMl * 0.3;
+  const jarCount = jarsNeeded(totalWeight, jarMl);
+  const waterMl = jarMl * 0.3 * jarCount;
 
   // Spices
   const allFlavors = entries.flatMap((e) => {
@@ -460,7 +471,7 @@ function generateFermentRecipe(entries: HarvestEntry[]): RecipeOutput {
   const fermentDays = totalWeight > 300 ? "5-7" : "4-6";
 
   const steps = [
-    `Wash your ${jarSize} Mason jar and lid with hot soapy water. Rinse well.`,
+    `Wash ${jarLabel(jarCount, jarSize)} and lids with hot soapy water. Rinse well.`,
     `Wash and prep your ${produceNames.toLowerCase()}. For even fermentation, cut pieces to roughly uniform size. Slice dense vegetables (carrots, radishes) no thicker than 1/4 inch (6mm). Cherry tomatoes can be left whole but prick each one with a toothpick to allow brine penetration.`,
     `Pack the produce tightly into the jar. Add your spices throughout the layers as you pack — this distributes flavor evenly.`,
     `Dissolve ${formatGrams(saltGrams)} of salt in ${formatMl(waterMl)} of filtered water. Stir until completely clear. This is your brine.`,
@@ -476,10 +487,10 @@ function generateFermentRecipe(entries: HarvestEntry[]): RecipeOutput {
     method: "ferment",
     jarSize,
     jarSizeMl: jarMl,
-    servings: jarSize === "half-pint" ? 4 : 8,
+    servings: (jarSize === "half-pint" ? 4 : 8) * jarCount,
     ingredients,
     equipment: [
-      `1 ${jarSize} Mason jar with lid (or airlock lid)`,
+      `${jarLabel(jarCount, jarSize)} with ${jarCount > 1 ? "lids (or airlock lids)" : "lid (or airlock lid)"}`,
       "Fermentation weight or small zip-lock bag",
       "Plate or bowl (to catch overflow)",
       "Kitchen scale (strongly recommended for salt accuracy)",
@@ -515,7 +526,8 @@ function generateWaterBathRecipe(entries: HarvestEntry[]): RecipeOutput {
   // For water-bath: we need acidification if the produce is low-acid
   // Standard recipes use specific ratios; let's build a safe small-batch
   // For pickled products via water bath: 50% vinegar / 50% water + 5% salt of liquid
-  const brineMl = jarMl * 0.35;
+  const jarCount = jarsNeeded(totalWeight, jarMl);
+  const brineMl = jarMl * 0.35 * jarCount;
   const vinegarMl = brineMl / 2;
   const waterMl = brineMl / 2;
   const saltGrams = roundTo(brineMl * 0.025, 1);
@@ -665,18 +677,18 @@ function generateWaterBathRecipe(entries: HarvestEntry[]): RecipeOutput {
     ];
 
     steps = [
-      `Sterilize your ${jarSize} Mason jar and lid: submerge in boiling water for 10 minutes, then keep hot until ready to fill.`,
-      `Wash and prep your ${produceNames.toLowerCase()}. Cut into uniform pieces for even processing. Pack the raw vegetables tightly into the hot jar, leaving 1/2 inch (1.25 cm) of headspace.`,
+      `Sterilize ${jarLabel(jarCount, jarSize)} and lids: submerge in boiling water for 10 minutes, then keep hot until ready to fill.`,
+      `Wash and prep your ${produceNames.toLowerCase()}. Cut into uniform pieces for even processing. Pack the raw vegetables tightly into the hot jar${jarCount > 1 ? "s" : ""}, leaving 1/2 inch (1.25 cm) of headspace.`,
       `In a saucepan, combine the ${formatMl(vinegarMl)} of vinegar, ${formatMl(waterMl)} of water, and ${formatGrams(saltGrams)} of salt. Bring to a rolling boil, stirring until salt dissolves.`,
       `Carefully ladle the boiling hot brine over the vegetables, maintaining the 1/2 inch headspace. Run a non-metallic spatula around the inside to release air bubbles. Add more brine if needed to maintain headspace.`,
       `Wipe the jar rim with a clean, damp cloth. Place the sterilized lid on and screw the band until fingertip-tight.`,
-      `Place the jar on the canning rack in a boiling water canner. Ensure the jar is covered by 1-2 inches of water. Bring to a full rolling boil and process for ${processingMinutes} minutes, adjusting for altitude if needed (+1 minute per 1000 ft above 1000 ft).`,
-      `Turn off heat, remove lid, wait 5 minutes. Using jar lifter, remove the jar without tilting. Place on a towel and let cool undisturbed for 12-24 hours.`,
+      `Place the jar${jarCount > 1 ? "s" : ""} on the canning rack in a boiling water canner, covered by 1-2 inches of water. Bring to a full rolling boil and process for ${processingMinutes} minutes at 0-1,000 ft. Above 1,000 ft, process longer: ${processingMinutes + 5} minutes at 1,001-3,000 ft, ${processingMinutes + 10} minutes at 3,001-6,000 ft, ${processingMinutes + 15} minutes above 6,000 ft.`,
+      `Turn off heat, remove lid, wait 5 minutes. Using jar lifter, remove the jar${jarCount > 1 ? "s" : ""} without tilting. Place on a towel and let cool undisturbed for 12-24 hours.`,
       `Check the seal: the lid center should be firm and not pop when pressed. Label with the date. Store in a cool, dark place.`,
     ];
 
     safetyNote =
-      "Water-bath canning is ONLY safe for high-acid foods. The vinegar in this recipe provides the necessary acidity (final pH below 4.6). Do NOT reduce the vinegar amount. Use only vinegar with exactly 5% acidity. If you live above 1,000 ft elevation, add 1 minute processing time per 1,000 ft. Do NOT attempt water-bath canning for low-acid vegetables without proper acidification — use pressure canning instead.";
+      "Water-bath canning is ONLY safe for high-acid foods. The vinegar in this recipe provides the necessary acidity (final pH below 4.6). Do NOT reduce the vinegar amount. Use only vinegar with exactly 5% acidity. Above 1,000 ft elevation, add 5 minutes processing time at 1,001-3,000 ft, 10 minutes at 3,001-6,000 ft and 15 minutes above 6,000 ft. This covers the longest adjustment in the National Center for Home Food Preservation's pickled-vegetable tables. Do NOT attempt water-bath canning for low-acid vegetables without proper acidification — use pressure canning instead.";
   }
 
   return {
@@ -684,10 +696,10 @@ function generateWaterBathRecipe(entries: HarvestEntry[]): RecipeOutput {
     method: "water-bath",
     jarSize,
     jarSizeMl: jarMl,
-    servings: jarSize === "half-pint" ? 4 : 8,
+    servings: (jarSize === "half-pint" ? 4 : 8) * jarCount,
     ingredients,
     equipment: [
-      `1 ${jarSize} Mason jar with 2-piece lid`,
+      `${jarLabel(jarCount, jarSize)} with ${jarCount > 1 ? "2-piece lids" : "2-piece lid"}`,
       "Boiling water canner (or a large, deep pot with a lid and rack)",
       "Jar lifter or tongs",
       "Canning funnel",

@@ -50,7 +50,7 @@ const METHOD_SHELF_DATA: Record<TrackerMethod, ShelfLifeInfo> = {
   'Quick Pickle': {
     storageLocation: 'Fridge',
     shelfLifeMonths: 1,
-    shelfLifeLabel: '1 Month (Refrigerated)',
+    shelfLifeLabel: '1-2 Months (Refrigerated)',
     isShelfStable: false,
   },
   'Lacto-Ferment': {
