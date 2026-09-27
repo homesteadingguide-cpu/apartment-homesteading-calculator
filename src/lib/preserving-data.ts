@@ -33,6 +33,7 @@ export interface RecipeOutput {
   method: PreservingMethod;
   jarSize: "half-pint" | "pint";
   jarSizeMl: number;
+  jarCount: number;
   servings: number;
   ingredients: RecipeIngredient[];
   equipment: string[];
@@ -368,6 +369,7 @@ function generateQuickPickleRecipe(entries: HarvestEntry[]): RecipeOutput {
     method: "quick-pickle",
     jarSize,
     jarSizeMl: jarMl,
+    jarCount,
     servings: (jarSize === "half-pint" ? 4 : 8) * jarCount,
     ingredients,
     equipment: [
@@ -487,6 +489,7 @@ function generateFermentRecipe(entries: HarvestEntry[]): RecipeOutput {
     method: "ferment",
     jarSize,
     jarSizeMl: jarMl,
+    jarCount,
     servings: (jarSize === "half-pint" ? 4 : 8) * jarCount,
     ingredients,
     equipment: [
@@ -609,6 +612,7 @@ function generateWaterBathRecipe(entries: HarvestEntry[]): RecipeOutput {
       method: "water-bath",
       jarSize: fruitJar,
       jarSizeMl: fruitJarMl,
+      jarCount,
       servings: fruitJar === "half-pint" ? 4 : 8,
       ingredients,
       equipment: [
@@ -696,6 +700,7 @@ function generateWaterBathRecipe(entries: HarvestEntry[]): RecipeOutput {
     method: "water-bath",
     jarSize,
     jarSizeMl: jarMl,
+    jarCount,
     servings: (jarSize === "half-pint" ? 4 : 8) * jarCount,
     ingredients,
     equipment: [

@@ -102,7 +102,7 @@ export function recipeToText(recipe: RecipeOutput): string {
   lines.push(`  ${recipe.title}`);
   lines.push(divider);
   lines.push('');
-  lines.push(`  Jar Size:    ${recipe.jarSize === 'half-pint' ? 'Half-Pint' : 'Pint'} (${recipe.jarSizeMl} ml)`);
+  lines.push(`  Jar Size:    ${(recipe.jarCount ?? 1) > 1 ? `${recipe.jarCount} × ` : ''}${recipe.jarSize === 'half-pint' ? 'Half-Pint' : 'Pint'} (${recipe.jarSizeMl} ml)`);
   lines.push(`  Servings:    ${recipe.servings}`);
   lines.push(`  Method:      ${recipe.method === 'quick-pickle' ? 'Quick Pickle' : recipe.method === 'ferment' ? 'Lacto-Ferment' : 'Water-Bath Can'}`);
   lines.push('');
