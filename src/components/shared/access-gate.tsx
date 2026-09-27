@@ -177,7 +177,7 @@ export default function AccessGate({
                       setCodeInput(e.target.value.toUpperCase());
                       setError('');
                     }}
-                    placeholder="e.g. PRESERVE-ABC123"
+                    placeholder="Code from your access card"
                     className="flex-1 h-11 bg-white border-[#d6d3c8] focus:border-[#2D5A27]"
                     autoFocus
                   />
@@ -189,7 +189,10 @@ export default function AccessGate({
                     {isSubmitting ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
-                      <Unlock className="w-4 h-4" />
+                      <>
+                        <Unlock className="w-4 h-4" />
+                        Unlock
+                      </>
                     )}
                   </Button>
                 </div>
