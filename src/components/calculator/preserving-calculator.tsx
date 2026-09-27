@@ -280,7 +280,7 @@ function RecipeCard({
         </div>
         <h2 className="text-xl sm:text-2xl font-bold text-[#222]">{recipe.title}</h2>
         <p className="text-sm text-[#6b6559]">
-          {recipe.jarSize === 'half-pint' ? 'Half-Pint' : 'Pint'} Jar ({recipe.jarSizeMl} ml) — Serves {recipe.servings}
+          {recipe.jarCount > 1 ? `${recipe.jarCount} × ` : ''}{recipe.jarSize === 'half-pint' ? 'Half-Pint' : 'Pint'} Jar{recipe.jarCount > 1 ? 's' : ''} ({recipe.jarSizeMl} ml{recipe.jarCount > 1 ? ' each' : ''}) — Serves {recipe.servings}
         </p>
       </div>
 
@@ -332,7 +332,7 @@ function RecipeCard({
       {/* Stats — decorative on screen, hidden on print since info is in the header */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 print-hide">
         <MiniStat icon={Scale} label="Harvest" value={recipe.ingredients[0]?.amount ?? '-'} />
-        <MiniStat icon={Package} label="Jar Size" value={recipe.jarSize === 'half-pint' ? 'Half-Pint' : 'Pint'} />
+        <MiniStat icon={Package} label="Jar Size" value={`${recipe.jarCount > 1 ? `${recipe.jarCount} × ` : ''}${recipe.jarSize === 'half-pint' ? 'Half-Pint' : 'Pint'}`} />
         <MiniStat icon={Timer} label="Time" value={methodInfo?.timeRange.split('+')[0]?.trim() ?? '-'} />
         <MiniStat icon={Gauge} label="Difficulty" value={methodInfo?.difficulty} />
       </div>
@@ -359,7 +359,7 @@ function RecipeCard({
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#2D5A27]" />
-                Ingredients — Scaled for {recipe.jarSize === 'half-pint' ? 'Half-Pint' : 'Pint'} Jar
+                Ingredients — Scaled for {recipe.jarCount > 1 ? `${recipe.jarCount} ` : ''}{recipe.jarSize === 'half-pint' ? 'Half-Pint' : 'Pint'} Jar{recipe.jarCount > 1 ? 's' : ''}
               </CardTitle>
             </CardHeader>
             <CardContent>
