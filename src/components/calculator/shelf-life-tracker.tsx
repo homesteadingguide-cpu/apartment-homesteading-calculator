@@ -55,8 +55,8 @@ const METHOD_SHELF_DATA: Record<TrackerMethod, ShelfLifeInfo> = {
   },
   'Lacto-Ferment': {
     storageLocation: 'Fridge',
-    shelfLifeMonths: 6,
-    shelfLifeLabel: '6 Months (Refrigerated)',
+    shelfLifeMonths: 4,
+    shelfLifeLabel: '4-6 Months (Refrigerated)',
     isShelfStable: false,
   },
   'Water-Bath Can': {
