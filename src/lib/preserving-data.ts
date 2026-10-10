@@ -31,7 +31,7 @@ export interface HarvestEntry {
 export interface RecipeOutput {
   title: string;
   method: PreservingMethod;
-  jarSize: "half-pint" | "pint";
+  jarSize: "half-pint" | "pint" | "half-gallon";
   jarSizeMl: number;
   jarCount: number;
   servings: number;
@@ -509,6 +509,113 @@ function generateFermentRecipe(entries: HarvestEntry[]): RecipeOutput {
   };
 }
 
+// --- Cucumber pickles: the tested NCHFP dill pickle recipe at NC State's half-gallon size ---
+// Quantities are NCHFP's tested dill pickle recipe as NC State publishes it for a 1/2 gallon
+// container: 2 lb of 4-inch pickling cucumbers, 1 tbsp dill seed or 2 to 3 heads of dill, 1/4 cup
+// canning or pickling salt, 2 tbsp 5% vinegar, 4 cups water. There is no smaller tested size, so
+// this recipe is not scaled down and the vinegar and salt are never cut.
+const CUCUMBER_JAR_GRAMS = 900;
+const HALF_GALLON_ML = 1893;
+
+function quarterCups(n: number): string {
+  const frac = ["", "1/4", "1/2", "3/4"][n % 4];
+  const whole = Math.floor(n / 4);
+  if (whole === 0) return `${frac} cup`;
+  if (n % 4 === 0) return `${whole} ${whole > 1 ? "cups" : "cup"}`;
+  return `${whole} ${frac} cups`;
+}
+
+function isCucumberOnly(entries: HarvestEntry[]): boolean {
+  return entries.length > 0 && entries.every((e) => e.produceId === "cucumber");
+}
+
+function generateCucumberFermentRecipe(entries: HarvestEntry[]): RecipeOutput {
+  const totalWeight = entries.reduce((sum, e) => sum + e.weightGrams, 0);
+  const fullJars = Math.floor(totalWeight / CUCUMBER_JAR_GRAMS);
+  const jarCount = Math.max(1, fullJars);
+  const leftover = Math.max(0, totalWeight - jarCount * CUCUMBER_JAR_GRAMS);
+  const tooLittle = totalWeight < CUCUMBER_JAR_GRAMS;
+  const jarWord = jarCount > 1 ? "jars" : "jar";
+
+  const ingredients: RecipeIngredient[] = [
+    {
+      name: "Pickling Cucumbers, about 4 inches (10 cm) long",
+      amount: formatGrams(jarCount * CUCUMBER_JAR_GRAMS),
+      amountGrams: jarCount * CUCUMBER_JAR_GRAMS,
+      note: "2 pounds (900 g) per half-gallon jar. Brine them within 24 hours of picking.",
+    },
+    {
+      name: "Dill Seed, or Fresh or Dry Dill Heads",
+      amount: `${jarCount} tablespoon${jarCount > 1 ? "s" : ""} of seed, or ${jarCount * 2} to ${jarCount * 3} heads`,
+    },
+    {
+      name: "Canning or Pickling Salt",
+      amount: quarterCups(jarCount),
+      note: "Measure it as written. Not iodized table salt, and not flake salt such as kosher, which varies in density. Do not cut it back.",
+    },
+    {
+      name: "Vinegar, 5% Acidity",
+      amount: `${jarCount * 2} tablespoons`,
+      note: "Part of the tested recipe. Do not leave it out or change the amount.",
+    },
+    {
+      name: "Water",
+      amount: `${jarCount * 4} cups`,
+      amountMl: jarCount * 946,
+      note: "Soft water if yours is hard.",
+    },
+    {
+      name: "Optional, per jar",
+      amount: "1 clove of garlic, 1 dried pepper, 1 teaspoon whole mixed pickling spice",
+      note: "Use whole spices, tied loosely in a cheesecloth bag so you can lift them out.",
+    },
+  ];
+
+  const steps = [
+    ...(tooLittle
+      ? [
+          `You have less than the 2 pounds (900 g) this recipe is written for. There is no tested smaller size, so use the Quick Pickle method for this amount, or wait until you have 2 pounds.`,
+        ]
+      : []),
+    `Wash ${jarCount} half-gallon ${jarWord} and the lids in hot soapy water and rinse well.`,
+    `Wash the cucumbers. Cut a 1/16-inch (1.5 mm) slice off the blossom end of each and discard it. Leave 1/4 inch (6 mm) of stem attached.`,
+    `Put half the dill and any garlic, pepper or spice in the bottom of each jar. Add the cucumbers, then the rest of the dill and spices.`,
+    `Dissolve the salt in the vinegar and water. Pour the brine over the cucumbers.`,
+    `Weight the cucumbers so they stay 1 to 2 inches (2.5 to 5 cm) under the brine. Use a small, clean, food-grade zip bag, sealed and filled with some of the same brine, so a leak does not water down the jar. Never fill it with plain water. If you need more brine, mix it at the same proportions.`,
+    `Cover with a clean towel or a loose lid. Keep the jar at 70 to 75°F (21 to 24°C) for about 3 to 4 weeks, away from direct sun. At 55 to 65°F (13 to 18°C) it takes 5 to 6 weeks. Avoid temperatures above 80°F (27°C), which make the pickles soft.`,
+    `Check it several times a week and remove any surface scum promptly. A flat white film is often harmless kahm yeast. Fuzzy or colored growth is mold, and then the whole batch goes in the bin. If you cannot tell which it is, throw it out.`,
+    `When fermentation is complete, move the jar to the refrigerator.`,
+    ...(leftover >= 200
+      ? [`You have about ${formatGrams(leftover)} of cucumbers left over. Use them for Quick Pickles, not for a partly filled ferment jar.`]
+      : []),
+  ];
+
+  return {
+    title: "Lacto-Fermented Dill Pickles",
+    method: "ferment",
+    jarSize: "half-gallon",
+    jarSizeMl: HALF_GALLON_ML,
+    jarCount,
+    servings: 16 * jarCount,
+    ingredients,
+    equipment: [
+      `${jarCount} clean half-gallon (about 2 L) ${jarWord}`,
+      "Food-grade zip bag for a brine-filled weight, or a clean plate and glass weight",
+      "Clean towel or loose lid",
+      "Measuring cups and spoons",
+      "Cutting board & knife",
+    ],
+    steps,
+    storage:
+      "Store fully fermented pickles in the refrigerator, keeping them under the brine and removing any surface scum regularly.",
+    shelfLife:
+      "About 4 to 6 months in the fridge if surface scum is removed regularly, according to the National Center for Home Food Preservation. Canning fully fermented pickles is its better way to store them; follow its dill pickle recipe for the canning step.",
+    safetyNote:
+      "This is the tested National Center for Home Food Preservation dill pickle recipe at a half-gallon size. Keep the proportions exactly: do not cut the salt, change the vinegar, or top up with plain water. Discard the batch if the pickles become soft or slimy, smell bad, or show fuzzy or colored mold. If you cannot tell yeast from mold, throw it out.",
+    totalWeightGrams: totalWeight,
+  };
+}
+
 function generateWaterBathRecipe(entries: HarvestEntry[]): RecipeOutput {
   const produceNames = entries
     .map((e) => {
@@ -743,8 +850,15 @@ export function generateRecipe(
   switch (method) {
     case "quick-pickle":
       return generateQuickPickleRecipe(entries);
-    case "ferment":
-      return generateFermentRecipe(entries);
+    case "ferment": {
+      if (isCucumberOnly(entries)) return generateCucumberFermentRecipe(entries);
+      const fermentRecipe = generateFermentRecipe(entries);
+      if (entries.some((e) => e.produceId === "cucumber")) {
+        fermentRecipe.safetyNote +=
+          " Cucumber pickles have their own tested recipe (the National Center for Home Food Preservation dill pickles). Ferment cucumbers in a separate jar and choose them on their own.";
+      }
+      return fermentRecipe;
+    }
     case "water-bath":
       return generateWaterBathRecipe(entries);
     default:
@@ -777,10 +891,10 @@ export const METHOD_INFO: MethodInfo[] = [
   {
     id: "ferment",
     name: "Lacto-Ferment",
-    tagline: "Gut-friendly probiotics, zero vinegar",
+    tagline: "Gut-friendly probiotics from salt and time",
     description:
-      "The ancient art of preservation using only salt, water, and time. Lactic acid bacteria naturally present on your vegetables create tangy, complex flavors while producing beneficial probiotics. No heat, no vinegar — just the vegetables doing the work. The most rewarding method for patient apartment homesteaders.",
-    timeRange: "15 min prep + 4-10 days fermenting",
+      "The ancient art of preservation using only salt, water, and time. Lactic acid bacteria naturally present on your vegetables create tangy, complex flavors while producing beneficial probiotics. No heat, no canner, just the vegetables doing the work. Cucumber pickles follow the tested National Center for Home Food Preservation dill pickle recipe, which includes a little vinegar and takes 3 to 4 weeks. The most rewarding method for patient apartment homesteaders.",
+    timeRange: "15 min prep + 4 days to 4 weeks fermenting",
     difficulty: "Medium",
     equipmentSummary: "Mason jar, fermentation weight, kitchen scale",
   },
