@@ -456,10 +456,10 @@ function generateFermentRecipe(entries: HarvestEntry[]): RecipeOutput {
       note: produceNames,
     },
     {
-      name: "Non-Iodized Salt (Sea Salt, Kosher, or Pickling Salt)",
+      name: "Pickling (Canning) Salt",
       amount: formatGrams(saltGrams),
       amountGrams: saltGrams,
-      note: `This is 2.5% of produce weight — the sweet spot for crunchy, safe fermentation`,
+      note: `This is 2.5% of produce weight. Use pickling or canning salt, not iodized table salt, and not flake salt such as kosher, which varies in density. Weigh it.`,
     },
     {
       name: "Filtered or Chlorine-Free Water",
@@ -477,10 +477,10 @@ function generateFermentRecipe(entries: HarvestEntry[]): RecipeOutput {
     `Wash and prep your ${produceNames.toLowerCase()}. For even fermentation, cut pieces to roughly uniform size. Slice dense vegetables (carrots, radishes) no thicker than 1/4 inch (6mm). Cherry tomatoes can be left whole but prick each one with a toothpick to allow brine penetration.`,
     `Pack the produce tightly into the jar. Add your spices throughout the layers as you pack — this distributes flavor evenly.`,
     `Dissolve ${formatGrams(saltGrams)} of salt in ${formatMl(waterMl)} of filtered water. Stir until completely clear. This is your brine.`,
-    `Pour the brine over the produce. CRITICAL: Every single piece must be fully submerged. If any float, use a folded cabbage leaf, a small zip-lock bag filled with water, or a fermentation weight to hold them down. Leave 1 inch (2.5 cm) of headspace.`,
+    `Pour the brine over the produce. CRITICAL: Every single piece must be fully submerged. If any float, use a folded cabbage leaf, a small zip-lock bag filled with some of the same brine (so a leak won't water down your ferment), or a fermentation weight to hold them down. Leave 1 inch (2.5 cm) of headspace.`,
     `Screw the lid on loosely — NOT tight. Gases need to escape during fermentation. If using a standard Mason jar, tighten then back off a quarter turn. Alternatively, use an airlock lid.`,
-    `Place the jar on a plate or in a bowl (to catch any overflow) and store at room temperature, away from direct sunlight. Ideal temperature is 18-22°C (65-72°F).`,
-    `Check daily. You should see bubbles forming after 1-3 days — that means fermentation is active. Skim off any white film (kahm yeast) with a clean spoon; this is harmless but can affect flavor if left too long.`,
+    `Place the jar on a plate or in a bowl (to catch any overflow) and store at room temperature, away from direct sunlight. Keep it at 70 to 75°F (21 to 24°C), the range the National Center for Home Food Preservation recommends. Cooler is slower, and below 60°F (15°C) it may not ferment.`,
+    `Check daily. You should see bubbles forming after 1-3 days — that means fermentation is active. Remove any surface scum promptly with a clean spoon. A thin, flat white film is often kahm yeast, which is harmless but can taste off. Fuzzy or colored growth is mold, and then the whole batch goes in the bin. If you can't tell which it is, throw it out.`,
     `Taste test after ${fermentDays} days. When it reaches your preferred tanginess, put a tight lid on and move to the refrigerator. This stops fermentation.`,
   ];
 
@@ -502,9 +502,9 @@ function generateFermentRecipe(entries: HarvestEntry[]): RecipeOutput {
     steps,
     storage:
       "Once fermented to your liking, store in the refrigerator at or below 4°C (40°F). Keep produce submerged.",
-    shelfLife: `Fermented vegetables will keep for 3-6 months refrigerated. The flavor continues to develop (and get more sour) over time. Texture is best in the first 2 months.`,
+    shelfLife: `Keep it refrigerated. The National Center for Home Food Preservation gives about 4 to 6 months in the fridge for fermented cucumber pickles, and it has no tested figure for other vegetables, so check the jar every time you open it. The flavor keeps getting more sour over time.`,
     safetyNote:
-      "Fermentation is safe when done correctly. Key rules: (1) Use proper salt ratio (2-3%), never less. (2) Keep produce fully submerged at all times. (3) Discard if you see fuzzy mold (green/black/pink), smell putrid, or see pink/black slime. Kahm yeast (white film) is safe to skim off. (4) When in doubt, throw it out.",
+      "Fermentation is safe when done correctly. Key rules: (1) Use proper salt ratio (2-3%), never less. (2) Keep produce fully submerged at all times. (3) Remove surface scum promptly, and discard the batch if you see fuzzy or colored mold, it turns soft or slimy, or it smells bad. A thin, flat white film may be kahm yeast; if you can't tell it from mold, throw it out. (4) When in doubt, throw it out.",
     totalWeightGrams: totalWeight,
   };
 }
@@ -672,10 +672,10 @@ function generateWaterBathRecipe(entries: HarvestEntry[]): RecipeOutput {
         amountMl: waterMl,
       },
       {
-        name: "Pickling Salt or Kosher Salt",
+        name: "Pickling (Canning) Salt",
         amount: formatGrams(saltGrams),
         amountGrams: saltGrams,
-        note: "Do NOT use iodized table salt",
+        note: "Do NOT use iodized table salt, or flake salt such as kosher, which varies in density",
       },
       ...spiceIngredients,
     ];
