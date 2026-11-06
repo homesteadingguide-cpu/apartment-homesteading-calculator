@@ -206,7 +206,7 @@ export const PRODUCE: ProduceItem[] = [
     waterBath: true,
     defaultVinegar: "apple-cider",
     waterBathAcidified: false,
-    waterBathProcessingMinutes: 15,
+    waterBathProcessingMinutes: 5,
     flavorPairings: ["garlic", "onion", "oregano", "bay leaf"],
     defaultJarSize: "pint",
   },
@@ -232,7 +232,7 @@ export const PRODUCE: ProduceItem[] = [
     waterBath: true,
     defaultVinegar: "white",
     waterBathAcidified: false,
-    waterBathProcessingMinutes: 15,
+    waterBathProcessingMinutes: 10,
     flavorPairings: ["turmeric", "garlic", "chili flake", "coriander", "mustard seed"],
     defaultJarSize: "pint",
   },
@@ -616,6 +616,405 @@ function generateCucumberFermentRecipe(entries: HarvestEntry[]): RecipeOutput {
   };
 }
 
+
+// --- Vegetables: the tested NCHFP boiling-water canner recipes -------------------------------------
+// Every quantity and time below comes from the National Center for Home Food Preservation page named
+// beside it (adapted from the USDA Complete Guide to Home Canning, 2015). The published recipes are
+// batch recipes. Each is divided by its published yield (pints or half-pints) to give one jar's worth,
+// so the vinegar, water, salt and sugar keep the tested proportions. Process times depend on jar size
+// and altitude, not on how many jars are in the pot, and are used exactly as published. Nothing is
+// invented: where a page gives no amount for a thing (for example the weight of cauliflower florets),
+// the figure is labelled as an estimate and is used only to count jars.
+const FRUIT_IDS = ["strawberry", "peach", "blackberry", "raspberry"];
+
+function perJarCups(n: number, cupsPerJar: number): string {
+  const total = n * cupsPerJar;
+  const whole = Math.floor(total + 1e-9);
+  const rem = total - whole;
+  const fracs: [number, string][] = [[0, ""], [1 / 8, "1/8"], [1 / 4, "1/4"], [1 / 3, "1/3"], [3 / 8, "3/8"], [1 / 2, "1/2"], [5 / 8, "5/8"], [2 / 3, "2/3"], [3 / 4, "3/4"], [7 / 8, "7/8"], [1, ""]];
+  let best = fracs[0];
+  for (const f of fracs) if (Math.abs(f[0] - rem) < Math.abs(best[0] - rem)) best = f;
+  let w = whole;
+  if (best[0] === 1) w += 1;
+  const frac = best[0] === 1 ? "" : best[1];
+  if (w === 0) return `${frac} cup`;
+  return `${w}${frac ? " " + frac : ""} ${w > 1 || frac ? "cups" : "cup"}`;
+}
+
+function perJarSpoons(n: number, tspPerJar: number): string {
+  const tsp = n * tspPerJar;
+  if (tsp >= 3) {
+    const q = Math.round((tsp / 3) * 4) / 4;
+    const whole = Math.floor(q);
+    const f = { 0: "", 0.25: "1/4", 0.5: "1/2", 0.75: "3/4" }[q - whole] ?? "";
+    return `${whole}${f ? " " + f : ""} tbsp`;
+  }
+  const q = Math.round(tsp * 8) / 8;
+  const whole = Math.floor(q);
+  const rem = q - whole;
+  const map: Record<number, string> = { 0: "", 0.125: "1/8", 0.25: "1/4", 0.375: "3/8", 0.5: "1/2", 0.625: "5/8", 0.75: "3/4", 0.875: "7/8" };
+  const f = map[rem] ?? "";
+  if (whole === 0) return `${f} tsp`;
+  return `${whole}${f ? " " + f : ""} tsp`;
+}
+
+function perHalves(halves: number): string {
+  const whole = Math.floor(halves / 2);
+  const half = halves % 2 === 1;
+  if (whole === 0) return "1/2";
+  return `${whole}${half ? " 1/2" : ""}`;
+}
+
+type TimeBands = { label: string; minutes: number }[];
+
+function altitudeLine(bands: TimeBands): string {
+  return bands.map((b) => `${b.minutes} minutes ${b.label.startsWith("above") ? "" : "at "}${b.label}`).join(", ");
+}
+
+const PICKLE_BANDS = (a: number, b: number, c: number): TimeBands => [
+  { label: "0 to 1,000 ft", minutes: a },
+  { label: "1,001 to 6,000 ft", minutes: b },
+  { label: "above 6,000 ft", minutes: c },
+];
+
+function canningSteps(opts: {
+  jarCount: number;
+  jarSizeWord: string;
+  prepSteps: string[];
+  bands: TimeBands;
+  tooLittle: string | null;
+  headspace: string;
+}): string[] {
+  const { jarCount, jarSizeWord, prepSteps, bands, tooLittle, headspace } = opts;
+  const jars = `${jarCount} ${jarSizeWord} Mason jar${jarCount > 1 ? "s" : ""}`;
+  return [
+    ...(tooLittle ? [tooLittle] : []),
+    `Wash ${jars} and the lids in hot soapy water and rinse. Keep the jars hot (in the canner or a low oven) until you fill them.`,
+    ...prepSteps,
+    `Wipe the rims clean with a damp cloth. Put the lids on and screw the bands on until fingertip-tight. Leave ${headspace} of headspace.`,
+    `Lower the jars into a boiling water canner with the water at least 1 inch (2.5 cm) above the jar tops. Start the timer when the water is at a full rolling boil. Process for ${altitudeLine(bands)}. If you are not sure of your altitude, use the longer time.`,
+    `Turn off the heat, remove the canner lid, and wait 5 minutes. Lift the jars out without tilting them and set them on a towel. Do NOT retighten the lids. Let them cool undisturbed for 12 to 24 hours.`,
+    `Check each seal: press the center of the lid. It should be firm and not flex. Refrigerate any jar that did not seal and use it within a week or two. Label the sealed jars with the date and store them in a cool, dark place.`,
+  ];
+}
+
+const VEG_CANNING_EQUIPMENT = (jarCount: number, jarSizeWord: string): string[] => [
+  `${jarCount} ${jarSizeWord} Mason jar${jarCount > 1 ? "s" : ""} with 2-piece lids`,
+  "Boiling water canner (a deep pot with a lid and a rack, deep enough for 1 inch of water over the jars)",
+  "Jar lifter",
+  "Canning funnel",
+  "Non-metallic spatula or chopstick",
+  "Measuring cups and spoons",
+  "Cutting board & knife",
+];
+
+const POUND = 453.6;
+
+function jarCountFor(totalWeight: number, gramsPerJar: number): { jarCount: number; tooLittle: boolean; leftover: number } {
+  const full = Math.floor(totalWeight / gramsPerJar);
+  const jarCount = Math.max(1, full);
+  const tooLittle = totalWeight < gramsPerJar * 0.75;
+  const leftover = Math.max(0, totalWeight - jarCount * gramsPerJar);
+  return { jarCount, tooLittle, leftover };
+}
+
+function tooLittleStep(gramsPerJar: number, jarWord: string): string {
+  return `You have less than one ${jarWord}'s worth (about ${formatGrams(gramsPerJar)}). The recipe below is written for whole jars, so either wait until you have enough, or use the Quick Pickle method, which keeps in the fridge and needs no canner.`;
+}
+
+function leftoverStep(leftover: number, gramsPerJar: number): string[] {
+  return leftover >= gramsPerJar * 0.25
+    ? [`You have about ${formatGrams(leftover)} left over, which is not enough for a full jar. Use it for Quick Pickles instead of packing a part-empty jar.`]
+    : [];
+}
+
+const SHELF_STORAGE = "Store sealed jars in a cool, dark, dry place (50-70°F / 10-21°C). Once opened, refrigerate.";
+const SHELF_LIFE = "For best quality, use within a year. Refrigerate after opening.";
+
+// NCHFP "Dilled Beans": 4 lb beans, 8-16 dill heads, 8 cloves garlic (optional), 1/2 cup canning or pickling
+// salt, 4 cups 5% white vinegar, 4 cups water, 1 tsp hot red pepper flakes (optional). Yield about 8 pints.
+// Raw pack, pints: 5 min at 0-1,000 ft, 10 at 1,001-6,000, 15 above 6,000.
+function generateDilledBeansRecipe(totalWeight: number): RecipeOutput {
+  const GRAMS_PER_PINT = (4 * POUND) / 8;
+  const { jarCount, tooLittle, leftover } = jarCountFor(totalWeight, GRAMS_PER_PINT);
+  const n = jarCount;
+  const ingredients: RecipeIngredient[] = [
+    { name: "Fresh Tender Green or Yellow Beans, 5 to 6 inches (12 to 15 cm) long", amount: formatGrams(n * GRAMS_PER_PINT), amountGrams: n * GRAMS_PER_PINT, note: "About 1/2 pound (227 g) per pint jar." },
+    { name: "Fresh Dill Heads", amount: `${n} to ${n * 2}`, note: "1 to 2 heads per jar." },
+    { name: "Garlic Cloves (optional)", amount: `${n}`, note: "1 clove per jar." },
+    { name: "Canning or Pickling Salt", amount: perJarSpoons(n, 3), note: "1 tablespoon per jar. Not iodized table salt, and not flake salt such as kosher, which varies in density. Do not cut it back." },
+    { name: "White Vinegar, 5% Acidity", amount: perJarCups(n, 1 / 2), amountMl: Math.round(n * 118), note: "Part of the tested recipe. Do not reduce it or swap the vinegar for something weaker." },
+    { name: "Water", amount: perJarCups(n, 1 / 2), amountMl: Math.round(n * 118) },
+    { name: "Hot Red Pepper Flakes (optional)", amount: perJarSpoons(n, 1 / 8) },
+  ];
+  const steps = canningSteps({
+    jarCount: n,
+    jarSizeWord: "pint",
+    tooLittle: tooLittle ? tooLittleStep(GRAMS_PER_PINT, "pint jar") : null,
+    headspace: "1/2 inch (1.25 cm)",
+    bands: PICKLE_BANDS(5, 10, 15),
+    prepSteps: [
+      `Wash the beans, trim the ends, and cut them into 4-inch (10 cm) lengths.`,
+      `In each hot jar put 1 to 2 dill heads and, if you like, 1 clove of garlic. Pack the beans upright, trimming them to fit, leaving 1/2 inch (1.25 cm) of headspace. This is a raw pack.`,
+      `Combine the salt, vinegar, water and pepper flakes in a saucepan and bring to a boil. Pour the hot brine over the beans, leaving 1/2 inch (1.25 cm) of headspace.`,
+      ...leftoverStep(leftover, GRAMS_PER_PINT),
+    ],
+  });
+  return {
+    title: "Dilled Beans (Water-Bath Canned)",
+    method: "water-bath",
+    jarSize: "pint",
+    jarSizeMl: 473,
+    jarCount: n,
+    servings: 6 * n,
+    ingredients,
+    equipment: VEG_CANNING_EQUIPMENT(n, "pint"),
+    steps,
+    storage: SHELF_STORAGE,
+    shelfLife: SHELF_LIFE,
+    safetyNote:
+      "This is the tested National Center for Home Food Preservation Dilled Beans recipe, divided by its yield of 8 pints so each jar keeps the tested proportions. Keep the vinegar, water and salt exactly as written: do not cut the vinegar, do not add extra water, and do not shorten the processing time. Use vinegar labelled 5% acidity. Pints are the tested jar size.",
+    totalWeightGrams: totalWeight,
+  };
+}
+
+// NCHFP "Pickled Bell Peppers": 7 lb firm bell peppers, 3 1/2 cups sugar, 3 cups 5% vinegar, 3 cups water,
+// 9 cloves garlic, 4 1/2 tsp canning or pickling salt. Yield about 9 pints. 1/2 clove garlic and 1/4 tsp salt
+// per half-pint, double for pints. Hot pack, half-pints or pints: 5 / 10 / 15.
+function generatePickledPeppersRecipe(totalWeight: number): RecipeOutput {
+  const GRAMS_PER_PINT = (7 * POUND) / 9;
+  const SUGAR_G_PER_PINT = (3.5 * 200) / 9;
+  const { jarCount, tooLittle, leftover } = jarCountFor(totalWeight, GRAMS_PER_PINT);
+  const n = jarCount;
+  const sugarG = Math.round(n * SUGAR_G_PER_PINT);
+  const ingredients: RecipeIngredient[] = [
+    { name: "Firm Bell Peppers", amount: formatGrams(n * GRAMS_PER_PINT), amountGrams: n * GRAMS_PER_PINT, note: "About 3/4 pound (353 g) per pint jar." },
+    { name: "Granulated Sugar", amount: `${formatGrams(sugarG)} (about ${perJarCups(n, 3.5 / 9)})`, amountGrams: sugarG, note: "Part of the tested recipe. Do not leave it out." },
+    { name: "Vinegar, 5% Acidity", amount: perJarCups(n, 3 / 9), amountMl: Math.round((n * 3 * 236.6) / 9), note: "Part of the tested recipe. Do not reduce it." },
+    { name: "Water", amount: perJarCups(n, 3 / 9), amountMl: Math.round((n * 3 * 236.6) / 9) },
+    { name: "Garlic Cloves", amount: `${n}`, note: "1 clove per pint jar (1/2 clove per half-pint)." },
+    { name: "Canning or Pickling Salt", amount: perJarSpoons(n, 1 / 2), note: "1/2 teaspoon per pint jar (1/4 teaspoon per half-pint). Not iodized table salt, and not flake salt such as kosher." },
+  ];
+  const steps = canningSteps({
+    jarCount: n,
+    jarSizeWord: "pint",
+    tooLittle: tooLittle ? tooLittleStep(GRAMS_PER_PINT, "pint jar") : null,
+    headspace: "1/2 inch (1.25 cm)",
+    bands: PICKLE_BANDS(5, 10, 15),
+    prepSteps: [
+      `Wash the peppers, cut them into quarters, remove the cores and seeds, and cut away any blemishes. Slice the peppers into strips.`,
+      `Boil the sugar, vinegar and water together for 1 minute. Add the pepper strips and bring back to a boil.`,
+      `Put 1 clove of garlic and 1/2 teaspoon of salt in each hot pint jar (half of each in a half-pint jar). Add the pepper strips and cover them with the hot vinegar mixture, leaving 1/2 inch (1.25 cm) of headspace. This is a hot pack.`,
+      ...leftoverStep(leftover, GRAMS_PER_PINT),
+    ],
+  });
+  return {
+    title: "Pickled Bell Peppers (Water-Bath Canned)",
+    method: "water-bath",
+    jarSize: "pint",
+    jarSizeMl: 473,
+    jarCount: n,
+    servings: 6 * n,
+    ingredients,
+    equipment: VEG_CANNING_EQUIPMENT(n, "pint"),
+    steps,
+    storage: SHELF_STORAGE,
+    shelfLife: SHELF_LIFE,
+    safetyNote:
+      "This is the tested National Center for Home Food Preservation Pickled Bell Peppers recipe, divided by its yield of 9 pints so each jar keeps the tested proportions. Keep the vinegar, water, sugar and salt exactly as written, and do not shorten the processing time. Use vinegar labelled 5% acidity. The same time applies to half-pint and pint jars.",
+    totalWeightGrams: totalWeight,
+  };
+}
+
+// NCHFP "Pickled Cauliflower or Brussel Sprouts": 12 cups 1- to 2-inch florets, 4 cups 5% white vinegar,
+// 2 cups sugar, 2 cups thinly sliced onions, 1 cup diced sweet red peppers, 2 tbsp mustard seed,
+// 1 tbsp celery seed, 1 tsp turmeric, 1 tsp hot red pepper flakes. Yield about 9 half-pints.
+// Blanch cauliflower 3 minutes in salt water (4 tsp canning salt per gallon). Hot pack, half-pints or
+// pints: 10 / 15 / 20. NCHFP gives no weight for the florets; 100 g per cup is an estimate used only to
+// count jars.
+function generatePickledCauliflowerRecipe(totalWeight: number): RecipeOutput {
+  const FLORET_G_PER_CUP = 100;
+  const CUPS_PER_HALF_PINT = 12 / 9;
+  const GRAMS_PER_JAR = CUPS_PER_HALF_PINT * FLORET_G_PER_CUP;
+  const { jarCount, tooLittle, leftover } = jarCountFor(totalWeight, GRAMS_PER_JAR);
+  const n = jarCount;
+  const ingredients: RecipeIngredient[] = [
+    { name: "Cauliflower Florets, 1 to 2 inches (2.5 to 5 cm)", amount: `${perJarCups(n, CUPS_PER_HALF_PINT)} (about ${formatGrams(n * GRAMS_PER_JAR)})`, amountGrams: n * GRAMS_PER_JAR, note: "About 1 1/3 cups per half-pint jar. The weight is an estimate; measure the florets in cups." },
+    { name: "White Vinegar, 5% Acidity", amount: perJarCups(n, 4 / 9), amountMl: Math.round((n * 4 * 236.6) / 9), note: "Part of the tested recipe. Do not reduce it." },
+    { name: "Granulated Sugar", amount: perJarCups(n, 2 / 9), note: "Part of the tested recipe." },
+    { name: "Onions, thinly sliced", amount: perJarCups(n, 2 / 9) },
+    { name: "Sweet Red Peppers, diced", amount: perJarCups(n, 1 / 9) },
+    { name: "Mustard Seed", amount: perJarSpoons(n, 2 / 3) },
+    { name: "Celery Seed", amount: perJarSpoons(n, 1 / 3) },
+    { name: "Turmeric", amount: perJarSpoons(n, 1 / 9) },
+    { name: "Hot Red Pepper Flakes", amount: perJarSpoons(n, 1 / 9) },
+    { name: "Canning or Pickling Salt, for the blanching water", amount: "4 tsp per gallon of water", note: "Only for the 3-minute blanch." },
+  ];
+  const steps = canningSteps({
+    jarCount: n,
+    jarSizeWord: "half-pint",
+    tooLittle: tooLittle ? tooLittleStep(GRAMS_PER_JAR, "half-pint jar") : null,
+    headspace: "1/2 inch (1.25 cm)",
+    bands: PICKLE_BANDS(10, 15, 20),
+    prepSteps: [
+      `Wash the cauliflower and cut it into 1- to 2-inch (2.5 to 5 cm) florets, removing stems and blemishes. Boil the florets in salted water (4 teaspoons of canning salt per gallon) for 3 minutes. Drain and cool.`,
+      `Combine the vinegar, sugar, onion, red pepper and spices in a large saucepan. Bring to a boil and simmer 5 minutes.`,
+      `Share the onion and diced pepper among the hot jars. Fill the jars with florets and the hot pickling solution, leaving 1/2 inch (1.25 cm) of headspace. This is a hot pack.`,
+      ...leftoverStep(leftover, GRAMS_PER_JAR),
+    ],
+  });
+  return {
+    title: "Pickled Cauliflower (Water-Bath Canned)",
+    method: "water-bath",
+    jarSize: "half-pint",
+    jarSizeMl: 237,
+    jarCount: n,
+    servings: 3 * n,
+    ingredients,
+    equipment: VEG_CANNING_EQUIPMENT(n, "half-pint"),
+    steps,
+    storage: SHELF_STORAGE,
+    shelfLife: SHELF_LIFE,
+    safetyNote:
+      "This is the tested National Center for Home Food Preservation Pickled Cauliflower or Brussels Sprouts recipe, divided by its yield of 9 half-pints so each jar keeps the tested proportions. Keep the vinegar and the other ingredients exactly as written, and do not shorten the processing time. Use vinegar labelled 5% acidity. The same time applies to half-pint and pint jars.",
+    totalWeightGrams: totalWeight,
+  };
+}
+
+// NCHFP "Quick Fresh-Pack Dill Pickles": 8 lb 3- to 5-inch pickling cucumbers; soak in 2 gal water with 3/4 cup
+// canning or pickling salt for 12 hours, drain; brine of 1 1/2 qt 5% vinegar, 1/2 cup salt, 1/4 cup sugar,
+// 2 qt water, 2 tbsp whole mixed pickling spice (tied in cloth); per pint 1 tsp mustard seed and 1 1/2 heads
+// fresh dill (or 1 1/2 tsp dill seed). Yield 7 to 9 pints (8 used). Raw pack, pints: 10 / 15 / 20.
+function generateFreshPackDillPicklesRecipe(totalWeight: number): RecipeOutput {
+  const GRAMS_PER_PINT = (8 * POUND) / 8;
+  const { jarCount, tooLittle, leftover } = jarCountFor(totalWeight, GRAMS_PER_PINT);
+  const n = jarCount;
+  const ingredients: RecipeIngredient[] = [
+    { name: "Pickling Cucumbers, 3 to 5 inches (7.5 to 12.5 cm) long", amount: formatGrams(n * GRAMS_PER_PINT), amountGrams: n * GRAMS_PER_PINT, note: "About 1 pound (454 g) per pint jar." },
+    { name: "For the 12-hour soak: Water", amount: `${n} quart${n > 1 ? "s" : ""}`, note: "1 quart per pound of cucumbers." },
+    { name: "For the 12-hour soak: Canning or Pickling Salt", amount: perJarSpoons(n, 4.5), note: "1 1/2 tablespoons per pound. Not iodized table salt, and not flake salt such as kosher." },
+    { name: "For the brine: Vinegar, 5% Acidity", amount: perJarCups(n, 3 / 4), amountMl: Math.round(n * 0.75 * 236.6), note: "Part of the tested recipe. Do not reduce it." },
+    { name: "For the brine: Water", amount: perJarCups(n, 1) },
+    { name: "For the brine: Canning or Pickling Salt", amount: perJarSpoons(n, 3) },
+    { name: "For the brine: Sugar", amount: perJarSpoons(n, 2) },
+    { name: "Whole Mixed Pickling Spice", amount: perJarSpoons(n, 3 / 4), note: "Tie it in a clean white cloth and simmer it in the brine." },
+    { name: "Mustard Seed", amount: `${n} tsp`, note: "1 teaspoon per pint jar." },
+    { name: "Fresh Dill Heads, or Dill Seed", amount: `${perHalves(n * 3)} heads, or ${perHalves(n * 3)} tsp seed`, note: "1 1/2 heads (or 1 1/2 teaspoons of seed) per pint jar." },
+  ];
+  const steps = canningSteps({
+    jarCount: n,
+    jarSizeWord: "pint",
+    tooLittle: tooLittle ? tooLittleStep(GRAMS_PER_PINT, "pint jar") : null,
+    headspace: "1/2 inch (1.25 cm)",
+    bands: PICKLE_BANDS(10, 15, 20),
+    prepSteps: [
+      `Wash the cucumbers. Cut a 1/16-inch (1.5 mm) slice off the blossom end and discard it, but leave 1/4 inch (6 mm) of stem attached.`,
+      `Dissolve the soak salt in the soak water, pour it over the cucumbers, and leave them for 12 hours. Drain.`,
+      `Combine the brine vinegar, brine salt, sugar and brine water. Add the pickling spice tied in a clean white cloth. Heat to boiling.`,
+      `Fill the hot jars with cucumbers. Add 1 teaspoon of mustard seed and 1 1/2 heads of fresh dill (or 1 1/2 teaspoons of dill seed) to each pint. Cover with the boiling pickling solution, leaving 1/2 inch (1.25 cm) of headspace. This is a raw pack.`,
+      ...leftoverStep(leftover, GRAMS_PER_PINT),
+    ],
+  });
+  return {
+    title: "Quick Fresh-Pack Dill Pickles (Water-Bath Canned)",
+    method: "water-bath",
+    jarSize: "pint",
+    jarSizeMl: 473,
+    jarCount: n,
+    servings: 8 * n,
+    ingredients,
+    equipment: VEG_CANNING_EQUIPMENT(n, "pint"),
+    steps,
+    storage: SHELF_STORAGE,
+    shelfLife: SHELF_LIFE,
+    safetyNote:
+      "This is the tested National Center for Home Food Preservation Quick Fresh-Pack Dill Pickles recipe, divided by its yield of 8 pints so each jar keeps the tested proportions. Keep the vinegar, water and salt exactly as written, and do not shorten the processing time. Use vinegar labelled 5% acidity. Pints are the tested size here.",
+    totalWeightGrams: totalWeight,
+  };
+}
+
+// NCHFP "Whole or Halved Tomatoes (packed in water)" with "Tomato acidification directions": average 13 lb
+// per 9 pints (about 1.4 lb a pint). Add 1 tablespoon bottled lemon or lime juice from concentrate (or 1/4 tsp
+// citric acid, or 2 tbsp 5% vinegar) to each pint. Salt 1 tsp per quart, optional. Raw or hot pack, boiling
+// water canner, pints: 40 min at 0-1,000 ft, 45 at 1,001-3,000, 50 at 3,001-6,000, 55 above 6,000.
+function generateWholeTomatoesRecipe(totalWeight: number): RecipeOutput {
+  const GRAMS_PER_PINT = (13 * POUND) / 9;
+  const { jarCount, tooLittle, leftover } = jarCountFor(totalWeight, GRAMS_PER_PINT);
+  const n = jarCount;
+  const ingredients: RecipeIngredient[] = [
+    { name: "Cherry Tomatoes, whole", amount: formatGrams(n * GRAMS_PER_PINT), amountGrams: n * GRAMS_PER_PINT, note: "About 1 1/2 pounds (655 g) per pint jar, from NCHFP's average of 13 pounds for 9 pints." },
+    { name: "Bottled Lemon or Lime Juice, from concentrate", amount: `${n} tablespoon${n > 1 ? "s" : ""}`, note: "1 tablespoon per pint jar, added to the jar before the tomatoes. This acid is required. Do not leave it out. Use bottled juice, not fresh. Alternatives per pint: 1/4 teaspoon citric acid, or 2 tablespoons of 5% vinegar." },
+    { name: "Boiling Water", amount: "enough to cover", note: "Heat it before you fill the jars." },
+    { name: "Salt (optional)", amount: perJarSpoons(n, 1 / 2), note: "1 teaspoon per quart, so 1/2 teaspoon per pint." },
+  ];
+  const steps = canningSteps({
+    jarCount: n,
+    jarSizeWord: "pint",
+    tooLittle: tooLittle ? tooLittleStep(GRAMS_PER_PINT, "pint jar") : null,
+    headspace: "1/2 inch (1.25 cm)",
+    bands: [
+      { label: "0 to 1,000 ft", minutes: 40 },
+      { label: "1,001 to 3,000 ft", minutes: 45 },
+      { label: "3,001 to 6,000 ft", minutes: 50 },
+      { label: "above 6,000 ft", minutes: 55 },
+    ],
+    prepSteps: [
+      `Wash the tomatoes. Dip them in boiling water for 30 to 60 seconds, until the skins split, then dip them in cold water. Slip off the skins and remove the cores. Leave them whole.`,
+      `Put 1 tablespoon of bottled lemon or lime juice in each hot pint jar, and the optional salt.`,
+      `Raw pack: fill the hot jars with the prepared tomatoes and cover them with boiling water. Hot pack: boil the tomatoes gently in enough water to cover them for 5 minutes, fill the jars with the hot tomatoes, and add the cooking liquid. Either way, leave 1/2 inch (1.25 cm) of headspace.`,
+      ...leftoverStep(leftover, GRAMS_PER_PINT),
+    ],
+  });
+  return {
+    title: "Whole Tomatoes Packed in Water (Water-Bath Canned)",
+    method: "water-bath",
+    jarSize: "pint",
+    jarSizeMl: 473,
+    jarCount: n,
+    servings: 3 * n,
+    ingredients,
+    equipment: VEG_CANNING_EQUIPMENT(n, "pint"),
+    steps,
+    storage: SHELF_STORAGE,
+    shelfLife: SHELF_LIFE,
+    safetyNote:
+      "This is the tested National Center for Home Food Preservation recipe for whole tomatoes packed in water, with its acidification directions. Tomatoes are only borderline acid, so the bottled lemon or lime juice (or citric acid, or vinegar) in each jar is required: add it before you fill the jar, and never skip it or use fresh juice. These are canned tomatoes, not pickled tomatoes. Do not shorten the processing time.",
+    totalWeightGrams: totalWeight,
+  };
+}
+
+const TESTED_VEGETABLE_WATER_BATH: Record<string, (totalWeight: number) => RecipeOutput> = {
+  "green-bean": generateDilledBeansRecipe,
+  "bell-pepper": generatePickledPeppersRecipe,
+  cauliflower: generatePickledCauliflowerRecipe,
+  cucumber: generateFreshPackDillPicklesRecipe,
+  "cherry-tomato": generateWholeTomatoesRecipe,
+};
+
+// Shown when the crops chosen cannot be canned together: each vegetable has its own tested recipe and time.
+function generateCanOneAtATimeNotice(entries: HarvestEntry[]): RecipeOutput {
+  const total = entries.reduce((sum, e) => sum + e.weightGrams, 0);
+  return {
+    title: "Can one crop at a time",
+    method: "water-bath",
+    jarSize: "pint",
+    jarSizeMl: 473,
+    jarCount: 0,
+    servings: 0,
+    ingredients: [],
+    equipment: [],
+    steps: [
+      "Each vegetable has its own tested recipe and processing time, and fruit jam has another. A mixed jar has no tested time, so this calculator will not make one.",
+      "Pick one crop on its own to get its tested recipe. Anything you do not have enough of for a whole jar works well as a Quick Pickle, which keeps in the fridge.",
+    ],
+    storage: "",
+    shelfLife: "",
+    safetyNote:
+      "Home canning is only safe when the recipe, jar size and processing time are tested together. Mixing crops in one canned jar has no tested time.",
+    totalWeightGrams: total,
+  };
+}
+
 function generateWaterBathRecipe(entries: HarvestEntry[]): RecipeOutput {
   const produceNames = entries
     .map((e) => {
@@ -625,28 +1024,10 @@ function generateWaterBathRecipe(entries: HarvestEntry[]): RecipeOutput {
     .join(" & ");
   const totalWeight = entries.reduce((sum, e) => sum + e.weightGrams, 0);
 
-  const primaryProduce = PRODUCE.find((p) => p.id === entries[0].produceId);
-  const jarSize = totalWeight > 250 ? "pint" : (primaryProduce?.defaultJarSize ?? "half-pint");
-  const jarMl = getJarMl(jarSize);
-
-  // Determine processing time from primary produce
-  const processingMinutes = primaryProduce?.waterBathProcessingMinutes ?? 15;
-  const needsAcid = primaryProduce?.waterBathAcidified ?? false;
-
-  // For water-bath: we need acidification if the produce is low-acid
-  // Standard recipes use specific ratios; let's build a safe small-batch
-  // For pickled products via water bath: 50% vinegar / 50% water + 5% salt of liquid
-  const jarCount = jarsNeeded(totalWeight, jarMl);
-  const brineMl = jarMl * 0.35 * jarCount;
-  const vinegarMl = brineMl / 2;
-  const waterMl = brineMl / 2;
-  const saltGrams = roundTo(brineMl * 0.025, 1);
-
   // For fruit jams: tested proportions for jam made without added pectin
   // (National Center for Home Food Preservation, adapted from the USDA Complete Guide to Home Canning).
   // Berries: equal volumes of crushed fruit and sugar, no lemon juice.
   // Peaches: 4-5 cups sugar and 2 Tbsp lemon juice per 5 1/2 to 6 cups crushed fruit.
-  const FRUIT_IDS = ["strawberry", "peach", "blackberry", "raspberry"];
   const isFruit = FRUIT_IDS.includes(entries[0].produceId);
 
   let ingredients: RecipeIngredient[];
@@ -740,95 +1121,10 @@ function generateWaterBathRecipe(entries: HarvestEntry[]): RecipeOutput {
       safetyNote,
       totalWeightGrams: totalWeight,
     };
-  } else {
-    // Pickled vegetable via water-bath canning
-    const vinegarType =
-      primaryProduce?.defaultVinegar === "white"
-        ? "White Distilled Vinegar (5% acidity)"
-        : primaryProduce?.defaultVinegar === "apple-cider"
-          ? "Apple Cider Vinegar (5% acidity)"
-          : "Rice Vinegar — NOTE: Only use if 5% acidity or higher";
-
-    const allFlavors = entries.flatMap((e) => {
-      const p = PRODUCE.find((pr) => pr.id === e.produceId);
-      return p?.flavorPairings ?? [];
-    });
-    const uniqueFlavors = [...new Set(allFlavors)].slice(0, 4);
-    const spiceIngredients: RecipeIngredient[] = uniqueFlavors.map((f) => ({
-      name: formatSpiceName(f),
-      amount: "to taste",
-      note: "1-2 pieces or a pinch",
-    }));
-
-    ingredients = [
-      {
-        name: "Your Harvest",
-        amount: formatGrams(totalWeight),
-        amountGrams: totalWeight,
-        note: produceNames,
-      },
-      {
-        name: vinegarType,
-        amount: formatMl(vinegarMl),
-        amountMl: vinegarMl,
-        note: "MUST be 5% acidity for safe canning",
-      },
-      {
-        name: "Water",
-        amount: formatMl(waterMl),
-        amountMl: waterMl,
-      },
-      {
-        name: "Pickling (Canning) Salt",
-        amount: formatGrams(saltGrams),
-        amountGrams: saltGrams,
-        note: "Do NOT use iodized table salt, or flake salt such as kosher, which varies in density",
-      },
-      ...spiceIngredients,
-    ];
-
-    steps = [
-      `Sterilize ${jarLabel(jarCount, jarSize)} and lids: submerge in boiling water for 10 minutes, then keep hot until ready to fill.`,
-      `Wash and prep your ${produceNames.toLowerCase()}. Cut into uniform pieces for even processing. Pack the raw vegetables tightly into the hot jar${jarCount > 1 ? "s" : ""}, leaving 1/2 inch (1.25 cm) of headspace.`,
-      `In a saucepan, combine the ${formatMl(vinegarMl)} of vinegar, ${formatMl(waterMl)} of water, and ${formatGrams(saltGrams)} of salt. Bring to a rolling boil, stirring until salt dissolves.`,
-      `Carefully ladle the boiling hot brine over the vegetables, maintaining the 1/2 inch headspace. Run a non-metallic spatula around the inside to release air bubbles. Add more brine if needed to maintain headspace.`,
-      `Wipe the jar rim with a clean, damp cloth. Place the sterilized lid on and screw the band until fingertip-tight.`,
-      `Place the jar${jarCount > 1 ? "s" : ""} on the canning rack in a boiling water canner, covered by 1-2 inches of water. Bring to a full rolling boil and process for ${processingMinutes} minutes at 0-1,000 ft. Above 1,000 ft, process longer: ${processingMinutes + 5} minutes at 1,001-3,000 ft, ${processingMinutes + 10} minutes at 3,001-6,000 ft, ${processingMinutes + 15} minutes above 6,000 ft.`,
-      `Turn off heat, remove lid, wait 5 minutes. Using jar lifter, remove the jar${jarCount > 1 ? "s" : ""} without tilting. Place on a towel and let cool undisturbed for 12-24 hours.`,
-      `Check the seal: the lid center should be firm and not pop when pressed. Label with the date. Store in a cool, dark place.`,
-    ];
-
-    safetyNote =
-      "Water-bath canning is ONLY safe for high-acid foods. The vinegar in this recipe provides the necessary acidity (final pH below 4.6). Do NOT reduce the vinegar amount. Use only vinegar with exactly 5% acidity. Above 1,000 ft elevation, add 5 minutes processing time at 1,001-3,000 ft, 10 minutes at 3,001-6,000 ft and 15 minutes above 6,000 ft. This covers the longest adjustment in the National Center for Home Food Preservation's pickled-vegetable tables. Do NOT attempt water-bath canning for low-acid vegetables without proper acidification — use pressure canning instead.";
   }
 
-  return {
-    title: isFruit ? `Water-Bath Canned ${produceNames}` : `Pickled ${produceNames} (Water-Bath Canned)`,
-    method: "water-bath",
-    jarSize,
-    jarSizeMl: jarMl,
-    jarCount,
-    servings: (jarSize === "half-pint" ? 4 : 8) * jarCount,
-    ingredients,
-    equipment: [
-      `${jarLabel(jarCount, jarSize)} with ${jarCount > 1 ? "2-piece lids" : "2-piece lid"}`,
-      "Boiling water canner (or a large, deep pot with a lid and rack)",
-      "Jar lifter or tongs",
-      "Canning funnel",
-      "Non-metallic spatula or chopstick",
-      "Kitchen scale",
-      "Cutting board & knife",
-    ],
-    steps,
-    storage: isFruit
-      ? "Store sealed jars in a cool, dark place (50-70°F / 10-21°C). Once opened, refrigerate and use within 3 weeks."
-      : "Store sealed jars in a cool, dark, dry place (50-70°F / 10-21°C). Once opened, refrigerate and use within 1-2 months.",
-    shelfLife: isFruit
-      ? "Properly sealed and stored, fruit preserves will keep for 12-18 months. For best quality, use within 12 months."
-      : "Properly sealed and stored, pickled vegetables will keep for up to 12 months. For best quality and crunch, use within 6-8 months.",
-    safetyNote,
-    totalWeightGrams: totalWeight,
-  };
+  // Vegetables never reach this function: generateRecipe sends them to the tested NCHFP recipes.
+  throw new Error("generateWaterBathRecipe handles fruit jam only");
 }
 
 // --- Main Recipe Generator ---
@@ -859,8 +1155,15 @@ export function generateRecipe(
       }
       return fermentRecipe;
     }
-    case "water-bath":
-      return generateWaterBathRecipe(entries);
+    case "water-bath": {
+      if (entries.every((e) => FRUIT_IDS.includes(e.produceId))) return generateWaterBathRecipe(entries);
+      const first = entries[0].produceId;
+      const tested = TESTED_VEGETABLE_WATER_BATH[first];
+      if (tested && entries.every((e) => e.produceId === first)) {
+        return tested(entries.reduce((sum, e) => sum + e.weightGrams, 0));
+      }
+      return generateCanOneAtATimeNotice(entries);
+    }
     default:
       return null;
   }
@@ -903,7 +1206,7 @@ export const METHOD_INFO: MethodInfo[] = [
     name: "Water-Bath Can",
     tagline: "Shelf-stable for months, pantry-ready",
     description:
-      "The real deal — properly canned preserves that sit safely on your pantry shelf for up to a year. A boiling water bath kills spoilage organisms and creates a vacuum seal. Requires a large pot (or canner) and careful attention to acidity levels, but the payoff is a pantry full of your own preserves. Small-batch recipes scaled for apartment quantities.",
+      "The real deal — properly canned preserves that sit safely on your pantry shelf for up to a year. A boiling water bath kills spoilage organisms and creates a vacuum seal. Requires a large pot (or canner) and careful attention to acidity levels, but the payoff is a pantry full of your own preserves. Every recipe here follows a tested National Center for Home Food Preservation recipe, one crop at a time, in whole jars.",
     timeRange: "45-60 min total",
     difficulty: "Advanced",
     equipmentSummary: "Large pot/canner, jar lifter, canning funnel",
